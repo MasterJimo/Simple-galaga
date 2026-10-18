@@ -328,8 +328,8 @@ const tracks=[
 ];
 let selectedTrack=1;
 try{
- const saved=Number(localStorage.getItem('starswarm.soundtrack'));
- if(Number.isInteger(saved)&&saved>=0&&saved<tracks.length)selectedTrack=saved;
+ const savedValue=localStorage.getItem('starswarm.soundtrack');
+ if(savedValue!==null&&savedValue!==''&&Number.isInteger(Number(savedValue))&&Number(savedValue)>=0&&Number(savedValue)<tracks.length)selectedTrack=Number(savedValue);
 }catch(_){}
 trackPicker.value=String(selectedTrack);
 function currentStepSeconds(){return selectedTrack===0?.23:60/tracks[selectedTrack].bpm/4}
