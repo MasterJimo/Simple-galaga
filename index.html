@@ -1,18 +1,35 @@
 <!doctype html>
-<html lang="pl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Swarm — arcade shooter</title><style>
-*{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:16px}h1{margin:0 0 8px;letter-spacing:.22em;text-align:center;color:#8deaff;text-shadow:0 0 20px #21a9ff}p{margin:8px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:12px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}</style></head><body><div class="shell"><h1>STAR SWARM</h1><p>Arcade shooter inspirowany klasycznymi grami kosmicznymi</p><div class="controls"><label>♫ Muzyka <input id="music" type="range" min="0" max="100" value="22"></label><label>✦ Efekty <input id="sfx" type="range" min="0" max="100" value="40"></label><button id="start">START / RESTART</button><button id="mute">Wycisz</button></div><canvas id="game" width="720" height="840" aria-label="Gra kosmiczna"></canvas><p>← → lub A / D — ruch · Spacja — strzał · Enter — start · P — pauza</p></div><script>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Swarm — arcade shooter</title><style>
+*{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:12px;display:flex;flex-direction:column;align-items:center}h1{margin:0 0 5px;letter-spacing:.22em;text-align:center;color:#8deaff;text-shadow:0 0 20px #21a9ff}p{margin:5px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:7px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}</style></head><body><div class="shell"><h1>STAR SWARM</h1><p>A classic-inspired space arcade shooter</p><div class="controls"><label>♫ Music <input id="music" type="range" min="0" max="100" value="22"></label><label>✦ SFX <input id="sfx" type="range" min="0" max="100" value="40"></label><button id="start">START / RESTART</button><button id="mute">Mute</button></div><canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas><p>← → or A / D — move · Space — shoot · Enter — start · P — pause</p></div><script>
 (()=>{'use strict';
 const c=document.querySelector('#game'),g=c.getContext('2d'),music=document.querySelector('#music'),sfx=document.querySelector('#sfx');const W=c.width,H=c.height;
+function fitGameToViewport(){
+ const shell=c.parentElement, box=getComputedStyle(shell);
+ const paddingX=parseFloat(box.paddingLeft)+parseFloat(box.paddingRight);
+ const paddingY=parseFloat(box.paddingTop)+parseFloat(box.paddingBottom);
+ const otherHeight=Array.from(shell.children).filter(el=>el!==c).reduce((total,el)=>{
+  const css=getComputedStyle(el);
+  return total+el.getBoundingClientRect().height+parseFloat(css.marginTop)+parseFloat(css.marginBottom);
+ },0);
+ const availableHeight=Math.max(100,(window.visualViewport?.height??window.innerHeight)-paddingY-otherHeight-10);
+ const availableWidth=Math.max(100,shell.clientWidth-paddingX);
+ const scale=Math.min(1,availableWidth/W,availableHeight/H);
+ c.style.width=Math.floor(W*scale)+'px';
+ c.style.height=Math.floor(H*scale)+'px';
+}
+fitGameToViewport();
+window.addEventListener('resize',fitGameToViewport);
+window.visualViewport?.addEventListener('resize',fitGameToViewport);
 let audio=null,master=null,musicGain=null,sfxGain=null,musicTimer=null,beat=0,muted=false;
 function soundInit(){if(audio){audio.resume();return}audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();musicGain=audio.createGain();sfxGain=audio.createGain();musicGain.connect(master);sfxGain.connect(master);master.connect(audio.destination);setVolume();musicTimer=setInterval(playMusic,230)}
 function setVolume(){if(!audio)return;musicGain.gain.value=muted?0:music.value/100*.34;sfxGain.gain.value=muted?0:sfx.value/100*.48}
 function tone(freq,dur,type='sine',volume=.18,dest=sfxGain,slide=0){if(!audio)return;let t=audio.currentTime,o=audio.createOscillator(),v=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);v.gain.setValueAtTime(Math.max(.0001,volume),t);v.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(v);v.connect(dest);o.start(t);o.stop(t+dur+.02)}
 const melody=[220,0,330,440,0,392,330,0,262,0,330,392,0,294,247,0];
 function playMusic(){if(state==='playing'){let n=melody[beat++%melody.length];if(n)tone(n,.18,'triangle',.18,musicGain);if(beat%4===1)tone(110,.15,'sine',.15,musicGain)}}
-music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'Włącz dźwięk':'Wycisz'};
+music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'Unmute':'Mute'};
 let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],enemies=[],particles=[],stars=[],keys=new Set(),last=0,spawnClock=0;
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
-function reset(){soundInit();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-95,cool:0,inv:110};makeWave()}
+function reset(){soundInit();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
 function makeWave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<9;col++)enemies.push({x:90+col*67,y:125+row*60,homeX:90+col*67,homeY:125+row*60,row,col,hp:row===0?2:1,mode:'formation',t:0,phase:Math.random()*6.28});spawnClock=0}
 document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
 function burst(x,y,color,n=14){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*22,color})}}
@@ -38,7 +55,7 @@ for(let e of enemies)drawShip(e.x,e.y,.86,true,e.row);
 for(let b of bullets){g.shadowBlur=13;g.shadowColor='#8beeff';g.fillStyle='#aefaff';g.fillRect(b.x-3,b.y-13,6,22)}for(let b of enemyShots){g.shadowColor='#ff5e88';g.fillStyle='#ff6d93';g.fillRect(b.x-3,b.y-5,6,13)}g.shadowBlur=0;
 for(let p of particles){g.globalAlpha=Math.min(1,p.life/35);g.fillStyle=p.color;g.fillRect(p.x,p.y,3,3)}g.globalAlpha=1;
 if(player&&!(player.inv>0&&Math.floor(frame/5)%2===0))drawShip(player.x,player.y);
-if(state!=='playing'){g.fillStyle='#010816bb';g.fillRect(0,0,W,H);g.textAlign='center';g.fillStyle='#a5efff';g.font='bold 48px system-ui';g.fillText(state==='gameover'?'GAME OVER':state==='paused'?'PAUZA':'STAR SWARM',W/2,H/2-36);g.font='22px system-ui';g.fillStyle='#f3f8ff';g.fillText(state==='gameover'?'Wynik: '+score:state==='paused'?'Naciśnij P, aby wrócić':'Kosmiczna strzelanka arcade',W/2,H/2+14);g.font='19px system-ui';g.fillText(state==='paused'?'':'Enter lub START, aby grać',W/2,H/2+55);g.textAlign='left'}}
+if(state!=='playing'){g.fillStyle='#010816bb';g.fillRect(0,0,W,H);g.textAlign='center';g.fillStyle='#a5efff';g.font='bold 48px system-ui';g.fillText(state==='gameover'?'GAME OVER':state==='paused'?'PAUSED':'STAR SWARM',W/2,H/2-36);g.font='22px system-ui';g.fillStyle='#f3f8ff';g.fillText(state==='gameover'?'Score: '+score:state==='paused'?'Press P to resume':'Classic-inspired space shooter',W/2,H/2+14);g.font='19px system-ui';g.fillText(state==='paused'?'':'Press Enter or START to play',W/2,H/2+55);g.textAlign='left'}}
 function loop(t){let dt=Math.min(2,(t-last)/16.667||1);last=t;update(dt);draw();requestAnimationFrame(loop)}requestAnimationFrame(loop);
 })();
 </script></body></html>
