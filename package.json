@@ -1,0 +1,13 @@
+{
+  "name": "simple-galaga",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "prepare:web": "node scripts/prepare-web.mjs",
+    "tauri": "tauri",
+    "build:windows": "npm run prepare:web && tauri build"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}
