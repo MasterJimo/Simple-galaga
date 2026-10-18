@@ -29,6 +29,8 @@
 .audio-settings{display:flex;flex-direction:column;gap:17px}
 .audio-control{display:flex;flex-direction:column;gap:9px;width:100%;font-size:16px;font-weight:800;letter-spacing:.04em;color:#d5efff}
 .audio-control input{display:block;width:100%;margin:0;accent-color:#56ddff;cursor:pointer}
+.audio-control select{display:block;width:100%;min-width:0;padding:10px 8px;border:1px solid #58cfff;border-radius:7px;background:#0a1b34;color:#e9f4ff;font:inherit;font-size:13px;letter-spacing:0;cursor:pointer}
+.audio-control select:focus-visible{outline:2px solid #8deaff;outline-offset:2px}
 .action-buttons{display:flex;flex-direction:column;gap:10px;margin:21px 0 23px}
 .action-buttons button{font-size:15px;font-weight:800;letter-spacing:.025em;text-transform:uppercase;min-height:40px}
 .control-guide{border-top:1px solid #315076;padding-top:16px}
@@ -47,7 +49,8 @@
  .controls-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
  .leaderboard-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
  .controls-panel h2,.leaderboard-panel h2{font-size:21px}
- .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+  .track-select{grid-column:1/-1}
  .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
  .control-guide{padding-top:12px}
  .guide-row{font-size:16px}
@@ -81,6 +84,18 @@
 <aside class="controls-panel" aria-labelledby="controlsTitle">
   <h2 id="controlsTitle">🎮 CONTROLS</h2>
   <div class="audio-settings">
+    <label class="audio-control track-select" for="track"><span>♫ SOUNDTRACK</span><select id="track" aria-label="Choose soundtrack">
+      <option value="0">01 · CLASSIC ARCADE</option>
+      <option value="1" selected>02 · NEON HORIZON</option>
+      <option value="2">03 · REACTOR RUSH</option>
+      <option value="3">04 · BASS OVERDRIVE</option>
+      <option value="4">05 · COSMIC PULSE</option>
+      <option value="5">06 · LASER STORM</option>
+      <option value="6">07 · HYPERDRIVE</option>
+      <option value="7">08 · DARK ORBIT</option>
+      <option value="8">09 · PIXEL UPRISING</option>
+      <option value="9">10 · FINAL ASSAULT</option>
+    </select></label>
     <label class="audio-control" for="music"><span>♫ MUSIC</span><input id="music" type="range" min="0" max="100" value="38" aria-label="Music volume"></label>
     <label class="audio-control" for="sfx"><span>✦ SFX</span><input id="sfx" type="range" min="0" max="100" value="40" aria-label="Sound effects volume"></label>
   </div>
@@ -226,14 +241,12 @@ function fitGameToViewport(){
 fitGameToViewport();
 window.addEventListener('resize',fitGameToViewport);
 window.visualViewport?.addEventListener('resize',fitGameToViewport);
-// Original eight-bar arcade-electronica loop, synthesised entirely in Web Audio.
-let audio=null,master=null,musicGain=null,sfxGain=null,musicTimer=null,noiseBuffer=null;
-let beat=0,nextMusicStep=0,muted=false;
-const BPM=138,STEP_SECONDS=60/BPM/4;
-const chordRoots=[40,36,43,38,40,36,35,38]; // E minor / C / G / D / E minor / C / B minor / D
-const chordThirds=[3,4,4,4,3,4,3,4];
-const bassPattern=[0,0,7,0,12,7,0,7,0,0,7,12,0,7,0,7];
-const leadPatterns=[
+// Ten original procedural soundtracks. No external music files or copyrighted samples.
+let audio=null,master=null,musicGain=null,sfxGain=null,musicTimer=null,noiseBuffer=null,musicBus=null;
+let beat=0,nextMusicStep=0,muted=false,busActive=true;
+const trackPicker=document.querySelector('#track');
+const oldSchoolMelody=[220,0,330,440,0,392,330,0,262,0,330,392,0,294,247,0];
+const neonLead=[
  [64,-1,67,71,-1,69,67,-1,74,-1,71,69,67,69,71,-1],
  [72,-1,76,79,-1,76,72,-1,71,-1,69,67,69,71,72,-1],
  [74,-1,71,67,69,-1,71,-1,79,-1,78,74,71,69,67,-1],
@@ -243,6 +256,103 @@ const leadPatterns=[
  [71,-1,74,78,-1,74,71,-1,69,-1,66,69,71,74,78,-1],
  [78,-1,81,86,-1,81,78,-1,76,-1,74,69,71,74,76,-1]
 ];
+const tracks=[
+ {name:'CLASSIC ARCADE',bpm:65,classic:true},
+ {name:'NEON HORIZON',bpm:138,roots:[40,36,43,38,40,36,35,38],thirds:[3,4,4,4,3,4,3,4],lead:neonLead,absolute:true,
+  bass:[0,0,7,0,12,7,0,7,0,0,7,12,0,7,0,7],k:'x---x---x---x---',sn:'----x-------x---',hh:'x-x-x-x-x-x-x-x-',
+  leadType:'square',leadLevel:.075,bassLevel:.16,hatLevel:.065,padLevel:.042,kickLevel:.55,leadCut:2400,bassCut:650},
+ {name:'REACTOR RUSH',bpm:150,roots:[40,40,38,38,36,36,35,38],
+  lead:[[24,-1,24,27,31,-1,27,24,36,-1,31,27,24,-1,19,24],
+        [24,24,-1,31,27,-1,24,19,24,-1,36,31,27,-1,24,19],
+        [24,-1,31,36,31,27,24,-1,19,24,27,31,36,-1,31,-1],
+        [36,-1,31,27,24,24,19,-1,24,-1,27,31,36,31,27,24]],
+  bass:[0,0,0,12,0,0,7,0,0,12,0,7,0,0,12,0],
+  k:'x---x---x---x---',sn:'----x-------x---',hh:'xxxxxxxxxxxxxxxx',
+  leadType:'sawtooth',leadLevel:.105,bassLevel:.26,hatLevel:.082,padLevel:.022,kickLevel:.88,leadCut:1800,bassCut:530,extraKick:true},
+ {name:'BASS OVERDRIVE',bpm:132,roots:[40,40,43,38,40,36,35,38],
+  lead:[[24,-1,-1,24,27,-1,24,-1,31,-1,27,24,19,-1,24,-1],
+        [24,-1,27,-1,31,27,-1,24,-1,19,24,-1,27,31,-1,24],
+        [31,-1,24,24,-1,19,24,-1,31,-1,36,-1,31,27,24,-1],
+        [24,-1,19,24,-1,27,31,-1,36,-1,31,27,-1,24,19,-1]],
+  bass:[0,0,-1,12,0,-1,7,0,0,12,0,-1,7,0,12,-1],
+  k:'x--xx---x--xx---',sn:'----x-------x---',hh:'x-x-xxx-x-x-xxx-',
+  leadType:'triangle',leadLevel:.073,bassLevel:.34,hatLevel:.052,padLevel:.025,kickLevel:.8,leadCut:2700,bassCut:880},
+ {name:'COSMIC PULSE',bpm:122,roots:[40,36,43,38,40,36,43,35],
+  lead:[[24,-1,-1,-1,27,-1,-1,31,-1,-1,27,-1,24,-1,-1,-1],
+        [24,-1,-1,31,-1,-1,27,-1,24,-1,-1,-1,19,-1,24,-1],
+        [31,-1,-1,-1,27,-1,24,-1,-1,19,-1,-1,24,-1,27,-1],
+        [24,-1,-1,19,-1,24,-1,27,-1,31,-1,-1,27,-1,-1,-1]],
+  bass:[0,-1,0,-1,7,-1,0,-1,12,-1,0,-1,7,-1,0,-1],
+  k:'x---x---x---x---',sn:'----x-------x---',hh:'--x---x---x---x-',
+  leadType:'sine',leadLevel:.075,bassLevel:.16,hatLevel:.036,padLevel:.071,kickLevel:.45,leadCut:0,bassCut:470},
+ {name:'LASER STORM',bpm:174,roots:[40,43,38,35,40,36,38,35],
+  lead:[[24,27,31,-1,36,31,27,24,19,24,27,-1,31,36,31,27],
+        [36,31,27,24,19,-1,24,27,31,27,24,-1,19,24,31,27],
+        [24,31,36,31,27,24,19,24,31,-1,36,38,36,31,27,24],
+        [36,38,36,31,27,24,19,-1,24,27,31,36,31,27,24,-1]],
+  bass:[0,0,-1,7,0,12,0,-1,0,7,12,0,-1,7,0,12],
+  k:'x-----x---x---x-',sn:'----x-------x---',hh:'xxx-xx-xxx-xx-xx',
+  leadType:'square',leadLevel:.061,bassLevel:.23,hatLevel:.057,padLevel:.011,kickLevel:.75,leadCut:3150,bassCut:830},
+ {name:'HYPERDRIVE',bpm:145,roots:[40,36,43,38,40,36,43,38],
+  lead:[[24,27,31,36,31,27,24,19,24,27,31,36,38,36,31,27],
+        [24,28,31,36,40,36,31,28,24,28,31,36,31,28,24,19],
+        [24,28,31,36,38,36,31,28,24,28,31,36,40,36,31,28],
+        [24,28,31,36,31,28,24,19,24,28,31,36,38,40,38,36]],
+  bass:[0,-1,0,-1,7,-1,0,-1,12,-1,7,-1,0,-1,7,-1],
+  k:'x---x---x---x---',sn:'----x-------x---',hh:'x-x-x-x-xxxxxxxx',
+  leadType:'sawtooth',leadLevel:.068,bassLevel:.17,hatLevel:.059,padLevel:.078,kickLevel:.64,leadCut:2600,bassCut:650},
+ {name:'DARK ORBIT',bpm:128,roots:[40,41,38,35,40,38,36,35],
+  lead:[[12,-1,12,-1,15,-1,12,19,-1,12,15,-1,22,-1,19,-1],
+        [12,-1,19,-1,15,-1,12,-1,10,12,-1,19,15,-1,12,-1],
+        [24,-1,19,15,12,-1,12,-1,15,-1,19,22,19,-1,15,-1],
+        [12,-1,15,-1,19,15,12,-1,10,-1,12,-1,19,15,12,-1]],
+  bass:[0,0,0,-1,7,0,0,-1,0,12,7,0,0,7,0,-1],
+  k:'x---x--xx---x---',sn:'----x-------x---',hh:'x-x-xx-xx-x-xx-x',
+  leadType:'sawtooth',leadLevel:.083,bassLevel:.27,hatLevel:.073,padLevel:.048,kickLevel:.85,leadCut:850,bassCut:380},
+ {name:'PIXEL UPRISING',bpm:152,roots:[40,36,43,38,40,36,35,38],
+  lead:[[24,27,31,-1,36,31,27,-1,24,19,24,27,31,-1,36,-1],
+        [24,28,31,36,-1,40,36,31,28,24,19,-1,24,28,31,-1],
+        [36,31,27,24,27,31,36,-1,38,36,31,27,24,-1,19,-1],
+        [24,-1,24,31,36,-1,38,40,38,36,31,27,24,19,24,-1]],
+  bass:[0,-1,7,0,-1,7,12,-1,0,7,-1,12,0,-1,7,-1],
+  k:'x---x---x---x---',sn:'----x-------x---',hh:'x-x-x-x-x-x-x-x-',
+  leadType:'square',leadLevel:.067,bassLevel:.15,hatLevel:.047,padLevel:.009,kickLevel:.48,leadCut:0,bassCut:750},
+ {name:'FINAL ASSAULT',bpm:160,roots:[40,38,36,35,40,43,38,35],
+  lead:[[24,-1,31,36,38,-1,36,31,27,24,27,31,36,-1,38,-1],
+        [24,27,31,36,38,40,38,36,31,-1,27,24,31,36,38,-1],
+        [36,38,40,43,40,38,36,31,27,31,36,38,40,-1,38,36],
+        [43,-1,40,38,36,31,27,24,27,31,36,38,36,31,27,-1]],
+  bass:[0,0,12,0,7,0,12,0,0,7,12,0,7,0,12,0],
+  k:'x---x---x---x-xx',sn:'----x-------x---',hh:'xxxxxxxxxxxxxxxx',
+  leadType:'sawtooth',leadLevel:.098,bassLevel:.29,hatLevel:.071,padLevel:.057,kickLevel:.92,leadCut:2600,bassCut:720,extraKick:true}
+];
+let selectedTrack=1;
+try{
+ const saved=Number(localStorage.getItem('starswarm.soundtrack'));
+ if(Number.isInteger(saved)&&saved>=0&&saved<tracks.length)selectedTrack=saved;
+}catch(_){}
+trackPicker.value=String(selectedTrack);
+function currentStepSeconds(){return selectedTrack===0?.23:60/tracks[selectedTrack].bpm/4}
+function makeMusicBus(){
+ const old=musicBus;
+ musicBus=audio.createGain();musicBus.gain.value=1;musicBus.connect(musicGain);busActive=true;
+ if(old){
+  old.gain.cancelScheduledValues(audio.currentTime);
+  old.gain.setTargetAtTime(0,audio.currentTime,.018);
+  setTimeout(()=>{try{old.disconnect()}catch(_){}},400);
+ }
+}
+function resetMusic(){
+ beat=0;
+ if(audio){makeMusicBus();nextMusicStep=audio.currentTime+.05}
+}
+trackPicker.addEventListener('change',()=>{
+ const index=Number(trackPicker.value);
+ if(!Number.isInteger(index)||index<0||index>=tracks.length)return;
+ selectedTrack=index;
+ try{localStorage.setItem('starswarm.soundtrack',String(index))}catch(_){}
+ resetMusic();
+});
 function soundInit(){
  if(audio){audio.resume();return}
  audio=new (window.AudioContext||window.webkitAudioContext)();
@@ -251,77 +361,108 @@ function soundInit(){
  noiseBuffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*.24),audio.sampleRate);
  const noise=noiseBuffer.getChannelData(0);
  for(let i=0;i<noise.length;i++)noise[i]=Math.random()*2-1;
- setVolume();nextMusicStep=audio.currentTime+.04;
+ makeMusicBus();setVolume();nextMusicStep=audio.currentTime+.05;
  musicTimer=setInterval(playMusic,25);
 }
-function setVolume(){if(!audio)return;musicGain.gain.value=muted?0:music.value/100*.34;sfxGain.gain.value=muted?0:sfx.value/100*.48}
-// Gameplay sound effects remain independent of the soundtrack.
-function tone(freq,dur,type='sine',volume=.18,dest=sfxGain,slide=0){if(!audio)return;let t=audio.currentTime,o=audio.createOscillator(),v=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);v.gain.setValueAtTime(Math.max(.0001,volume),t);v.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(v);v.connect(dest);o.start(t);o.stop(t+dur+.02)}
+function setVolume(){
+ if(!audio)return;
+ musicGain.gain.value=muted?0:music.value/100*.34;
+ sfxGain.gain.value=muted?0:sfx.value/100*.48;
+}
+// Gameplay effects are unchanged and routed independently from music.
+function tone(freq,dur,type='sine',volume=.18,dest=sfxGain,slide=0){
+ if(!audio)return;
+ let t=audio.currentTime,o=audio.createOscillator(),v=audio.createGain();
+ o.type=type;o.frequency.setValueAtTime(freq,t);
+ if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);
+ v.gain.setValueAtTime(Math.max(.0001,volume),t);
+ v.gain.exponentialRampToValueAtTime(.001,t+dur);
+ o.connect(v);v.connect(dest);o.start(t);o.stop(t+dur+.02);
+}
 function midiHz(note){return 440*Math.pow(2,(note-69)/12)}
 function musicVoice(note,t,dur,type,level,cutoff=0){
  const osc=audio.createOscillator(),env=audio.createGain();
  osc.type=type;osc.frequency.setValueAtTime(midiHz(note),t);
  env.gain.setValueAtTime(.0001,t);
- env.gain.exponentialRampToValueAtTime(level,t+Math.min(.018,dur*.2));
+ env.gain.exponentialRampToValueAtTime(Math.max(.0002,level),t+Math.min(.018,dur*.2));
  env.gain.exponentialRampToValueAtTime(.0001,t+dur);
  if(cutoff){
   const filter=audio.createBiquadFilter();
-  filter.type='lowpass';filter.frequency.value=cutoff;osc.connect(filter);filter.connect(env);
+  filter.type='lowpass';filter.frequency.value=cutoff;
+  osc.connect(filter);filter.connect(env);
  }else osc.connect(env);
- env.connect(musicGain);osc.start(t);osc.stop(t+dur+.01);
+ env.connect(musicBus);osc.start(t);osc.stop(t+dur+.01);
 }
 function musicNoise(t,dur,level,highpass){
  const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),env=audio.createGain();
  src.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=highpass;
  env.gain.setValueAtTime(level,t);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
- src.connect(filter);filter.connect(env);env.connect(musicGain);src.start(t);src.stop(t+dur+.001);
+ src.connect(filter);filter.connect(env);env.connect(musicBus);
+ src.start(t);src.stop(t+dur+.001);
 }
-function musicKick(t){
+function musicKick(t,level=.55){
  const osc=audio.createOscillator(),env=audio.createGain();
- osc.type='sine';osc.frequency.setValueAtTime(145,t);
- osc.frequency.exponentialRampToValueAtTime(48,t+.14);
- env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.55,t+.004);
+ osc.type='sine';osc.frequency.setValueAtTime(150,t);
+ osc.frequency.exponentialRampToValueAtTime(45,t+.14);
+ env.gain.setValueAtTime(.0001,t);
+ env.gain.exponentialRampToValueAtTime(level,t+.004);
  env.gain.exponentialRampToValueAtTime(.0001,t+.18);
- osc.connect(env);env.connect(musicGain);osc.start(t);osc.stop(t+.19);
+ osc.connect(env);env.connect(musicBus);osc.start(t);osc.stop(t+.19);
+}
+function scheduleClassic(t,step){
+ const freq=oldSchoolMelody[step];
+ if(freq)musicVoice(69+12*Math.log2(freq/440),t,.18,'triangle',.18);
+ if(step%4===0)musicVoice(69+12*Math.log2(110/440),t,.15,'sine',.15);
 }
 function scheduleMusicStep(t){
- const position=beat++%128,bar=Math.floor(position/16),step=position%16;
- const root=chordRoots[bar];
- if(step%4===0)musicKick(t);
- if(step===4||step===12){
+ const song=tracks[selectedTrack],position=beat++;
+ const step=position%16,bar=Math.floor(position/16)%8;
+ if(song.classic){scheduleClassic(t,step);return}
+ const root=song.roots[bar],stepSeconds=currentStepSeconds();
+ if(song.k[step]==='x')musicKick(t,song.kickLevel);
+ if(song.extraKick&&step===14)musicKick(t,song.kickLevel*.38);
+ if(song.sn[step]==='x'){
   musicNoise(t,.14,.16,1700);
   musicVoice(50,t,.09,'triangle',.065);
  }
- if(step%2===0)musicNoise(t,.048,step%4===0?.035:.065,6500);
+ if(song.hh[step]==='x')musicNoise(t,.048,step%4===0?.035:song.hatLevel,6500);
  if(step===14)musicNoise(t,.11,.05,5200);
- if(step===0){
-  for(const interval of [0,chordThirds[bar],7])
-   musicVoice(root+12+interval,t,STEP_SECONDS*15,'sawtooth',.042,1200);
+ if(step===0&&song.padLevel){
+  const thirds=song.thirds??[3,4,4,4,3,4,3,4];
+  for(const interval of [0,thirds[bar],7])
+   musicVoice(root+12+interval,t,stepSeconds*15,'sawtooth',song.padLevel,1200);
  }
- if(step%2===0){
-  const bass=root+bassPattern[step];
-  musicVoice(bass,t,STEP_SECONDS*1.8,'sawtooth',.16,650);
-  musicVoice(bass-12,t,STEP_SECONDS*1.6,'sine',.12);
+ const bassOffset=song.bass[step];
+ if(bassOffset>=0){
+  const note=root+bassOffset;
+  musicVoice(note,t,stepSeconds*1.8,'sawtooth',song.bassLevel,song.bassCut);
+  musicVoice(note-12,t,stepSeconds*1.6,'sine',song.bassLevel*.75);
  }
- const lead=leadPatterns[bar][step];
- if(lead>0){
-  musicVoice(lead,t,STEP_SECONDS*1.65,'square',.075,2400);
-  musicVoice(lead-12,t,STEP_SECONDS*1.25,'triangle',.043);
+ const row=song.lead[bar%song.lead.length],lead=row[step];
+ if(lead>=0){
+  const note=song.absolute?lead:root+lead;
+  musicVoice(note,t,stepSeconds*1.65,song.leadType,song.leadLevel,song.leadCut);
+  if(selectedTrack!==8)musicVoice(note-12,t,stepSeconds*1.25,'triangle',song.leadLevel*.57);
  }
 }
 function playMusic(){
  if(!audio||audio.state!=='running')return;
- if(state!=='playing'){nextMusicStep=audio.currentTime+.04;return}
+ if(state!=='playing'){
+  nextMusicStep=audio.currentTime+.05;
+  if(busActive){musicBus.gain.setTargetAtTime(0,audio.currentTime,.025);busActive=false}
+  return;
+ }
+ if(!busActive){musicBus.gain.setTargetAtTime(1,audio.currentTime,.035);busActive=true}
  if(nextMusicStep<audio.currentTime-.15)nextMusicStep=audio.currentTime+.02;
  while(nextMusicStep<audio.currentTime+.13){
   scheduleMusicStep(nextMusicStep);
-  nextMusicStep+=STEP_SECONDS;
+  nextMusicStep+=currentStepSeconds();
  }
 }
 music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'UNMUTE':'MUTE'};
 let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],enemies=[],particles=[],stars=[],keys=new Set(),last=0,spawnClock=0;
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
-function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();beat=0;nextMusicStep=audio.currentTime+.04;state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
+function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();resetMusic();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
 function makeWave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<9;col++)enemies.push({x:90+col*67,y:125+row*60,homeX:90+col*67,homeY:125+row*60,row,col,hp:row===0?2:1,mode:'formation',t:0,phase:Math.random()*6.28});spawnClock=0}
 document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(e.target instanceof HTMLElement && e.target.closest('input,textarea,select,button,[contenteditable="true"]'))return;if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
 function burst(x,y,color,n=14){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*22,color})}}
