@@ -39,7 +39,7 @@ The following are one-time setup steps for the Firebase project owner:
 
 1. In **Build → Firestore Database**, create a **Standard edition** database if one does not already exist. The database may start in **production mode**.
 2. In **Build → Authentication → Sign-in method**, enable the **Anonymous** provider and select **Save**.
-3. Open **Firestore Database → Rules**. Replace the rules there with the entire contents of [firestore.rules](firestore.rules), then select **Publish**. **Saving the file in GitHub does not apply rules to Firebase automatically.** Do not use permissive test-mode rules.
+3. Open **Firestore Database → Rules** to review and manage the published security rules. Keep the existing restrictive rules that allow players to save only their own personal-best scores; use **Publish** after making changes. The rules are stored and enforced in **Firebase**, not GitHub. Do not replace them with permissive test-mode rules.
 4. Load [StarSwarm online](https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname in the side panel, submit the score, and confirm it appears in the automatically updated **TOP 10**. A new deployment may take a little time.
 
 ### Moderate scores
