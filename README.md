@@ -29,7 +29,7 @@ The game automatically scales to fit inside your browser window while preserving
 
 ## Global leaderboard (Firebase)
 
-After **GAME OVER**, type a nickname (2–16 letters, digits, underscores or hyphens) and select **Submit Score**. Your score and wave are taken from the game automatically. Open **🏆 Leaderboard** at any time to view the worldwide **Top 10**.
+The worldwide **TOP 10 leaderboard is always visible to the left of the game on wide screens**, without covering the playfield. On smaller screens, it moves below the game. Rankings update live from Firebase. After **GAME OVER**, enter a nickname (2–16 letters, digits, underscores or hyphens) in the leaderboard panel and select **Submit Score**. Your score and wave are captured automatically.
 
 The game uses the Firebase project `starswarm-6589b` for Cloud Firestore and anonymous Firebase Authentication. Firebase is initialized directly in `index.html` with the web app's public configuration, so **no server, Firebase CLI, or build step is required** for the GitHub Pages game.
 
@@ -40,7 +40,7 @@ The following are one-time setup steps for the Firebase project owner:
 1. In **Build → Firestore Database**, create a **Standard edition** database if one does not already exist. The database may start in **production mode**.
 2. In **Build → Authentication → Sign-in method**, enable the **Anonymous** provider and select **Save**.
 3. Open **Firestore Database → Rules**. Replace the rules there with the entire contents of [firestore.rules](firestore.rules), then select **Publish**. **Saving the file in GitHub does not apply rules to Firebase automatically.** Do not use permissive test-mode rules.
-4. Load [StarSwarm online](https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname, submit the score, and open **Leaderboard** to confirm it appears. A new deployment may take a little time.
+4. Load [StarSwarm online](https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname in the side panel, submit the score, and confirm it appears in the automatically updated **TOP 10**. A new deployment may take a little time.
 
 ### Moderate scores
 
