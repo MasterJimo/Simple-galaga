@@ -1,13 +1,30 @@
-# Simple Galaga / Star Swarm
+# Simple Galaga / Star Swarm 🎮
 
-Kosmiczna gra arcade w HTML. Sterowanie: strzałki / A i D, spacja, P.
+Darmowa gra kosmiczna działająca **bezpośrednio w przeglądarce**. Nie wymaga instalacji.
 
-## Gra w przeglądarce
-Pobierz `index.html` i otwórz w Chrome. Można też włączyć **Settings → Pages → Build and deployment → GitHub Actions**; workflow `Publish web game` opublikuje stronę. **Uwaga:** GitHub Pages dla prywatnych repozytoriów zależy od planu GitHub; opublikowana strona jest publiczna.
+## Zagraj online
 
-## Windows EXE
-Po wypchnięciu tagu `v0.1.0` workflow `Build Windows EXE` zbuduje instalator Windows (.exe) i doda go do **Releases**. Można też uruchomić workflow ręcznie w **Actions** i pobrać EXE z **Artifacts**. Plik EXE jest instalatorem; po instalacji gra uruchamia się jako aplikacja Windows. Tauri używa systemowego WebView2 (na większości współczesnych Windows jest już obecny).
+**https://masterjimo.github.io/Simple-galaga/**
 
-Lokalnie: Node.js 22, Rust i narzędzia C++ dla Windows; `npm install`, `npm run prepare:web`, `npx tauri build --bundles nsis`.
+Jeśli link jeszcze nie działa: w repozytorium wybierz **Settings → Pages → Build and deployment → Source → GitHub Actions**. Publikacja uruchamia się automatycznie po każdej zmianie na gałęzi `main`.
 
-Grafika i dźwięki generowane są w kodzie; bez zasobów oryginalnej Galagi.
+W zakładce **Actions → Publish web game** widać status wdrożenia. Zielony znacznik oznacza sukces.
+
+## Sterowanie
+
+- **← / →** lub **A / D** — poruszanie statkiem
+- **Spacja** — strzelanie
+- **P** — pauza
+- **Enter** — start
+
+Muzyka i efekty mają osobne suwaki głośności.
+
+## Uruchom lokalnie
+
+Pobierz plik `index.html` i otwórz go w Chrome, Firefox lub Edge.
+
+## Technologia
+
+Gra jest jednym samodzielnym plikiem HTML (Canvas 2D + Web Audio). Nie wymaga serwera ani zależności. Grafika i muzyka są generowane przez kod, bez kopiowania oryginalnych zasobów Galagi.
+
+**Projekt skupia się wyłącznie na wersji przeglądarkowej — bez instalatora i pliku EXE.**
