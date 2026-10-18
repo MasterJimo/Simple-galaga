@@ -29,7 +29,7 @@ The game automatically scales to fit inside your browser window while preserving
 
 ## Global leaderboard (Firebase)
 
-The worldwide **TOP 10 leaderboard is always visible to the left of the game on wide screens**, without covering the playfield. On smaller screens, it moves below the game. Rankings update live from Firebase. After **GAME OVER**, enter a nickname (2–16 letters, digits, underscores or hyphens) in the leaderboard panel and select **Submit Score**. Your score and wave are captured automatically.
+The worldwide **TOP 10 leaderboard is always visible to the left of the game on wide screens**, without covering the playfield. On smaller screens, it moves below the game. Rankings update live from Firebase. After **GAME OVER**, enter a nickname (1–16 letters, digits, underscores or hyphens) in the leaderboard panel and select **Submit Score**. Your score and wave are captured automatically. **Every run is saved independently**, so the same player can have several scores (and nicknames) in the TOP 10. Only the top 10 runs appear in the panel, but other results stay stored.
 
 The game uses the Firebase project `starswarm-6589b` for Cloud Firestore and anonymous Firebase Authentication. Firebase is initialized directly in `index.html` with the web app's public configuration, so **no server, Firebase CLI, or build step is required** for the GitHub Pages game.
 
@@ -39,7 +39,61 @@ The following are one-time setup steps for the Firebase project owner:
 
 1. In **Build → Firestore Database**, create a **Standard edition** database if one does not already exist. The database may start in **production mode**.
 2. In **Build → Authentication → Sign-in method**, enable the **Anonymous** provider and select **Save**.
-3. Open **Firestore Database → Rules** to review and manage the published security rules. Keep the existing restrictive rules that allow players to save only their own personal-best scores; use **Publish** after making changes. The rules are stored and enforced in **Firebase**, not GitHub. Do not replace them with permissive test-mode rules.
+3. Open **Firestore Database → Rules**. **Replace your existing rules** with the code below and select **Publish**. The old rules only allowed one best score per player, and will reject the new multi-run writes. These rules live in Firebase, not a GitHub file. Never use test-mode or public-write rules.
+```javascript
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /scores/{scoreId} {
+      allow get, list: if true;
+
+      // One immutable document for every completed game.
+      allow create: if request.auth != null
+        && request.resource.data.keys().hasAll([
+          'uid', 'nickname', 'score', 'wave', 'createdAt'
+        ])
+        && request.resource.data.keys().hasOnly([
+          'uid', 'nickname', 'score', 'wave', 'createdAt'
+        ])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.nickname is string
+        && request.resource.data.nickname.matches('^[A-Za-z0-9_-]{1,16}(https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname in the side panel, submit the score, and confirm it appears in the automatically updated **TOP 10**. A new deployment may take a little time.
+
+### Moderate scores
+
+In the Firebase Console, open **Firestore Database → Data → scores**. Each document is a separate completed game. Old results are still readable. Select an inappropriate entry and use **Delete document**; you can delete all documents in that collection to reset the ranking. Regular anonymous players cannot change or delete existing runs under these Security Rules. Firebase Console owners can delete documents using administrative privileges.
+
+### Security limitations
+
+Scores are produced in the browser. Although the Security Rules validate types, score range, nickname format, and account ownership, and prevent modifying existing runs, **they cannot prove that a displayed score was earned fairly**. Anonymous users can also create additional identities by resetting their browser. This is a casual leaderboard with basic protections, *not* an anti-cheat solution; robust validation would need a trusted backend. The game keeps running even when Firebase is unavailable, but score submission and the global leaderboard require Firestore rules and network access.
+
+## Play locally
+
+Download **`index.html`** from this repository and open it in Chrome, Edge, or Firefox. No local server or build tools are required.
+
+## Technology
+
+- HTML5 Canvas 2D for graphics
+- Web Audio API for synthesized music and sound effects
+- Vanilla JavaScript, HTML, and CSS
+- No external assets or dependencies; visual designs and sounds are generated in code
+
+**This project is browser-only.** It does not include a Windows EXE, an installer, or Tauri.
+)
+        && request.resource.data.score is int
+        && request.resource.data.score >= 0
+        && request.resource.data.score <= 100000000
+        && request.resource.data.wave is int
+        && request.resource.data.wave >= 1
+        && request.resource.data.wave <= 10000
+        && request.resource.data.createdAt == request.time;
+
+      allow update, delete: if false;
+    }
+  }
+}
+```
+
 4. Load [StarSwarm online](https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname in the side panel, submit the score, and confirm it appears in the automatically updated **TOP 10**. A new deployment may take a little time.
 
 ### Moderate scores
