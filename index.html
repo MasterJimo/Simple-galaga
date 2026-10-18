@@ -64,7 +64,7 @@
 
 .touch-controls{display:none;width:100%;max-width:720px;gap:12px;margin:10px auto 0;justify-content:space-between;touch-action:none;user-select:none;-webkit-user-select:none}
 .touch-controls button{flex:1;min-height:58px;font-size:21px;font-weight:900;touch-action:none;-webkit-tap-highlight-color:transparent;border:2px solid #58cfff;background:#113c63}
-.touch-controls button:last-child{flex:1.4;background:#295076}
+.touch-controls button:first-child{flex:1.4;background:#295076}
 .touch-controls button:active,.touch-controls button.pressed{background:#247bb8}
 @media (pointer:coarse){.touch-controls{display:flex}}
 </style></head><body><div class="app-layout">
@@ -87,9 +87,9 @@
   <p class="credit">Created by MrJim</p>
   <canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas>
   <div class="touch-controls" aria-label="Touch game controls">
+    <button type="button" id="touchFire" aria-label="Shoot">FIRE</button>
     <button type="button" id="touchLeft" aria-label="Move left">◀</button>
     <button type="button" id="touchRight" aria-label="Move right">▶</button>
-    <button type="button" id="touchFire" aria-label="Shoot">FIRE</button>
   </div>
 </main>
 <aside class="controls-panel" aria-labelledby="controlsTitle">
