@@ -167,7 +167,7 @@ window.addEventListener('starswarm:gameover', (event) => {
  document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
  formArea.hidden = false;
  setStatus('');
- if (window.matchMedia('(max-width:850px)').matches) {
+ if (window.matchMedia('(max-width:1000px)').matches) {
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
  }
 });
