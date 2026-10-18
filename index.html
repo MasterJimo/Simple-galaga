@@ -81,7 +81,7 @@
 <aside class="controls-panel" aria-labelledby="controlsTitle">
   <h2 id="controlsTitle">🎮 CONTROLS</h2>
   <div class="audio-settings">
-    <label class="audio-control" for="music"><span>♫ MUSIC</span><input id="music" type="range" min="0" max="100" value="22" aria-label="Music volume"></label>
+    <label class="audio-control" for="music"><span>♫ MUSIC</span><input id="music" type="range" min="0" max="100" value="38" aria-label="Music volume"></label>
     <label class="audio-control" for="sfx"><span>✦ SFX</span><input id="sfx" type="range" min="0" max="100" value="40" aria-label="Sound effects volume"></label>
   </div>
   <div class="action-buttons">
@@ -226,16 +226,102 @@ function fitGameToViewport(){
 fitGameToViewport();
 window.addEventListener('resize',fitGameToViewport);
 window.visualViewport?.addEventListener('resize',fitGameToViewport);
-let audio=null,master=null,musicGain=null,sfxGain=null,musicTimer=null,beat=0,muted=false;
-function soundInit(){if(audio){audio.resume();return}audio=new (window.AudioContext||window.webkitAudioContext)();master=audio.createGain();musicGain=audio.createGain();sfxGain=audio.createGain();musicGain.connect(master);sfxGain.connect(master);master.connect(audio.destination);setVolume();musicTimer=setInterval(playMusic,230)}
+// Original eight-bar arcade-electronica loop, synthesised entirely in Web Audio.
+let audio=null,master=null,musicGain=null,sfxGain=null,musicTimer=null,noiseBuffer=null;
+let beat=0,nextMusicStep=0,muted=false;
+const BPM=138,STEP_SECONDS=60/BPM/4;
+const chordRoots=[40,36,43,38,40,36,35,38]; // E minor / C / G / D / E minor / C / B minor / D
+const chordThirds=[3,4,4,4,3,4,3,4];
+const bassPattern=[0,0,7,0,12,7,0,7,0,0,7,12,0,7,0,7];
+const leadPatterns=[
+ [64,-1,67,71,-1,69,67,-1,74,-1,71,69,67,69,71,-1],
+ [72,-1,76,79,-1,76,72,-1,71,-1,69,67,69,71,72,-1],
+ [74,-1,71,67,69,-1,71,-1,79,-1,78,74,71,69,67,-1],
+ [69,-1,74,78,-1,76,74,-1,69,-1,66,69,74,72,69,-1],
+ [76,-1,79,83,-1,81,79,-1,74,-1,76,79,81,79,76,-1],
+ [79,-1,76,72,76,-1,79,-1,84,-1,83,79,76,72,71,-1],
+ [71,-1,74,78,-1,74,71,-1,69,-1,66,69,71,74,78,-1],
+ [78,-1,81,86,-1,81,78,-1,76,-1,74,69,71,74,76,-1]
+];
+function soundInit(){
+ if(audio){audio.resume();return}
+ audio=new (window.AudioContext||window.webkitAudioContext)();
+ master=audio.createGain();musicGain=audio.createGain();sfxGain=audio.createGain();
+ musicGain.connect(master);sfxGain.connect(master);master.connect(audio.destination);
+ noiseBuffer=audio.createBuffer(1,Math.ceil(audio.sampleRate*.24),audio.sampleRate);
+ const noise=noiseBuffer.getChannelData(0);
+ for(let i=0;i<noise.length;i++)noise[i]=Math.random()*2-1;
+ setVolume();nextMusicStep=audio.currentTime+.04;
+ musicTimer=setInterval(playMusic,25);
+}
 function setVolume(){if(!audio)return;musicGain.gain.value=muted?0:music.value/100*.34;sfxGain.gain.value=muted?0:sfx.value/100*.48}
+// Gameplay sound effects remain independent of the soundtrack.
 function tone(freq,dur,type='sine',volume=.18,dest=sfxGain,slide=0){if(!audio)return;let t=audio.currentTime,o=audio.createOscillator(),v=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);v.gain.setValueAtTime(Math.max(.0001,volume),t);v.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(v);v.connect(dest);o.start(t);o.stop(t+dur+.02)}
-const melody=[220,0,330,440,0,392,330,0,262,0,330,392,0,294,247,0];
-function playMusic(){if(state==='playing'){let n=melody[beat++%melody.length];if(n)tone(n,.18,'triangle',.18,musicGain);if(beat%4===1)tone(110,.15,'sine',.15,musicGain)}}
+function midiHz(note){return 440*Math.pow(2,(note-69)/12)}
+function musicVoice(note,t,dur,type,level,cutoff=0){
+ const osc=audio.createOscillator(),env=audio.createGain();
+ osc.type=type;osc.frequency.setValueAtTime(midiHz(note),t);
+ env.gain.setValueAtTime(.0001,t);
+ env.gain.exponentialRampToValueAtTime(level,t+Math.min(.018,dur*.2));
+ env.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ if(cutoff){
+  const filter=audio.createBiquadFilter();
+  filter.type='lowpass';filter.frequency.value=cutoff;osc.connect(filter);filter.connect(env);
+ }else osc.connect(env);
+ env.connect(musicGain);osc.start(t);osc.stop(t+dur+.01);
+}
+function musicNoise(t,dur,level,highpass){
+ const src=audio.createBufferSource(),filter=audio.createBiquadFilter(),env=audio.createGain();
+ src.buffer=noiseBuffer;filter.type='highpass';filter.frequency.value=highpass;
+ env.gain.setValueAtTime(level,t);env.gain.exponentialRampToValueAtTime(.0001,t+dur);
+ src.connect(filter);filter.connect(env);env.connect(musicGain);src.start(t);src.stop(t+dur+.001);
+}
+function musicKick(t){
+ const osc=audio.createOscillator(),env=audio.createGain();
+ osc.type='sine';osc.frequency.setValueAtTime(145,t);
+ osc.frequency.exponentialRampToValueAtTime(48,t+.14);
+ env.gain.setValueAtTime(.0001,t);env.gain.exponentialRampToValueAtTime(.55,t+.004);
+ env.gain.exponentialRampToValueAtTime(.0001,t+.18);
+ osc.connect(env);env.connect(musicGain);osc.start(t);osc.stop(t+.19);
+}
+function scheduleMusicStep(t){
+ const position=beat++%128,bar=Math.floor(position/16),step=position%16;
+ const root=chordRoots[bar];
+ if(step%4===0)musicKick(t);
+ if(step===4||step===12){
+  musicNoise(t,.14,.16,1700);
+  musicVoice(50,t,.09,'triangle',.065);
+ }
+ if(step%2===0)musicNoise(t,.048,step%4===0?.035:.065,6500);
+ if(step===14)musicNoise(t,.11,.05,5200);
+ if(step===0){
+  for(const interval of [0,chordThirds[bar],7])
+   musicVoice(root+12+interval,t,STEP_SECONDS*15,'sawtooth',.042,1200);
+ }
+ if(step%2===0){
+  const bass=root+bassPattern[step];
+  musicVoice(bass,t,STEP_SECONDS*1.8,'sawtooth',.16,650);
+  musicVoice(bass-12,t,STEP_SECONDS*1.6,'sine',.12);
+ }
+ const lead=leadPatterns[bar][step];
+ if(lead>0){
+  musicVoice(lead,t,STEP_SECONDS*1.65,'square',.075,2400);
+  musicVoice(lead-12,t,STEP_SECONDS*1.25,'triangle',.043);
+ }
+}
+function playMusic(){
+ if(!audio||audio.state!=='running')return;
+ if(state!=='playing'){nextMusicStep=audio.currentTime+.04;return}
+ if(nextMusicStep<audio.currentTime-.15)nextMusicStep=audio.currentTime+.02;
+ while(nextMusicStep<audio.currentTime+.13){
+  scheduleMusicStep(nextMusicStep);
+  nextMusicStep+=STEP_SECONDS;
+ }
+}
 music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'UNMUTE':'MUTE'};
 let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],enemies=[],particles=[],stars=[],keys=new Set(),last=0,spawnClock=0;
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
-function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
+function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();beat=0;nextMusicStep=audio.currentTime+.04;state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
 function makeWave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<9;col++)enemies.push({x:90+col*67,y:125+row*60,homeX:90+col*67,homeY:125+row*60,row,col,hp:row===0?2:1,mode:'formation',t:0,phase:Math.random()*6.28});spawnClock=0}
 document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(e.target instanceof HTMLElement && e.target.closest('input,textarea,select,button,[contenteditable="true"]'))return;if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
 function burst(x,y,color,n=14){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*22,color})}}
