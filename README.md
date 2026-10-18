@@ -1,30 +1,41 @@
-# Simple Galaga / Star Swarm 🎮
+# Star Swarm 🚀
 
-Darmowa gra kosmiczna działająca **bezpośrednio w przeglądarce**. Nie wymaga instalacji.
+A free, browser-based arcade space shooter inspired by classic games. **Play instantly — no downloads or installation required.**
 
-## Zagraj online
+## Play online
 
-**https://masterjimo.github.io/Simple-galaga/**
+🎮 **https://masterjimo.github.io/StarSwarm/**
 
-Jeśli link jeszcze nie działa: w repozytorium wybierz **Settings → Pages → Build and deployment → Source → GitHub Actions**. Publikacja uruchamia się automatycznie po każdej zmianie na gałęzi `main`.
+GitHub Pages deploys the game automatically whenever the `main` branch changes. To enable it, open **Settings → Pages → Build and deployment** and select **GitHub Actions** as the **Source**.
 
-W zakładce **Actions → Publish web game** widać status wdrożenia. Zielony znacznik oznacza sukces.
+Check deployment status at **Actions → Publish web game**. A green check mark means the latest deployment succeeded. If you just renamed this repository, the new Pages URL may need a fresh deployment before it works.
 
-## Sterowanie
+## Controls
 
-- **← / →** lub **A / D** — poruszanie statkiem
-- **Spacja** — strzelanie
-- **P** — pauza
-- **Enter** — start
+| Key | Action |
+| --- | --- |
+| **← / →** or **A / D** | Move your ship |
+| **Space** | Shoot |
+| **P** | Pause / resume |
+| **Enter** | Start / restart |
 
-Muzyka i efekty mają osobne suwaki głośności.
+Use the **Music** and **SFX** sliders to control background music and sound effects separately, or click **Mute** to silence both.
 
-## Uruchom lokalnie
+## Gameplay
 
-Pobierz plik `index.html` i otwórz go w Chrome, Firefox lub Edge.
+Shoot enemy formations, dodge incoming fire, and survive as many waves as possible. You have three lives. Higher waves become more challenging, and diving enemies are worth bonus points.
 
-## Technologia
+The game automatically scales to fit inside your browser window while preserving the whole playfield. For a larger view, maximize your browser window.
 
-Gra jest jednym samodzielnym plikiem HTML (Canvas 2D + Web Audio). Nie wymaga serwera ani zależności. Grafika i muzyka są generowane przez kod, bez kopiowania oryginalnych zasobów Galagi.
+## Play locally
 
-**Projekt skupia się wyłącznie na wersji przeglądarkowej — bez instalatora i pliku EXE.**
+Download **`index.html`** from this repository and open it in Chrome, Edge, or Firefox. No local server or build tools are required.
+
+## Technology
+
+- HTML5 Canvas 2D for graphics
+- Web Audio API for synthesized music and sound effects
+- Vanilla JavaScript, HTML, and CSS
+- No external assets or dependencies; visual designs and sounds are generated in code
+
+**This project is browser-only.** It does not include a Windows EXE, an installer, or Tauri.
