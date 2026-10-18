@@ -1,45 +1,60 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Swarm — arcade shooter</title><style>
 *{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:12px;display:flex;flex-direction:column;align-items:center}h1{margin:0 0 5px;letter-spacing:.22em;text-align:center;color:#8deaff;text-shadow:0 0 20px #21a9ff}p{margin:5px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:7px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}
-.score-overlay{position:fixed;inset:0;z-index:10;background:#020817dd;display:grid;place-items:center;padding:16px}
-.score-overlay[hidden],.score-submit[hidden]{display:none!important}
-.score-card{position:relative;width:min(460px,100%);max-height:min(92vh,740px);overflow:auto;background:#101e3b;border:1px solid #58cfff;border-radius:14px;padding:22px;box-shadow:0 0 55px #000b}
-.score-card h2{color:#8deaff;text-align:center;letter-spacing:.12em;margin:0 0 14px;font-size:24px}
-.score-close{float:right}
-.score-submit{background:#142747;border-radius:8px;padding:12px;margin:12px 0}
-.score-submit p{color:#e9f4ff}
-.score-submit form{display:flex;flex-wrap:wrap;gap:8px;align-items:end;justify-content:center}
-.score-submit label{display:flex;flex-direction:column;gap:4px;font-size:13px}
-.score-submit input{width:160px;background:#060c1b;color:#fff;border:1px solid #58cfff;border-radius:5px;padding:8px}
-.score-list{padding-left:28px;margin:12px 0}
-.score-list li{padding:7px 4px;border-bottom:1px solid #ffffff20}
-.score-row{display:flex;justify-content:space-between;gap:10px}
-.score-row span{overflow-wrap:anywhere}
-.score-status{min-height:22px;color:#a3dff0;text-align:center}
-.score-note{font-size:12px;opacity:.85}
-.credit{font-size:14px;opacity:.8;margin:5px 0;letter-spacing:.04em}</style></head><body><div class="shell"><h1>STAR SWARM</h1><p class="credit">Created by MrJim</p><div class="controls"><label>♫ Music <input id="music" type="range" min="0" max="100" value="22"></label><label>✦ SFX <input id="sfx" type="range" min="0" max="100" value="40"></label><button id="start">START / RESTART</button><button id="mute">Mute</button><button id="showScores" type="button">🏆 Leaderboard</button></div><canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas><p>← → or A / D — move · Space — shoot · Enter — start · P — pause</p></div>
-<div id="scoreOverlay" class="score-overlay" hidden role="dialog" aria-modal="true" aria-labelledby="scoreTitle">
- <div class="score-card">
-  <button id="closeScores" class="score-close" type="button" aria-label="Close leaderboard">Close ×</button>
+.credit{font-size:14px;opacity:.8;margin:5px 0;letter-spacing:.04em}
+/* Keep the playfield centered on wide screens with equal left and right gutters. */
+.app-layout{width:100%;max-width:1500px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,760px) minmax(0,1fr);align-items:start;gap:clamp(12px,1.4vw,22px);margin:0 auto}
+.shell{grid-column:2;min-width:0}
+.leaderboard-panel{grid-column:1;grid-row:1;justify-self:end;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
+.leaderboard-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 15px}
+.score-submit[hidden]{display:none!important}
+.score-submit{background:#142747;border:1px solid #315076;border-radius:8px;padding:10px;margin:10px 0}
+.score-submit p{color:#e9f4ff;margin:4px 0 9px}
+.score-submit form{display:flex;flex-direction:column;align-items:stretch;gap:9px}
+.score-submit label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#d2eaff}
+.score-submit input{width:100%;min-width:0;background:#060c1b;color:#fff;border:1px solid #58cfff;border-radius:5px;padding:8px}
+.score-submit button{width:100%}
+.score-list{list-style:none;padding:0;margin:7px 0 10px;counter-reset:rank}
+.score-list li{counter-increment:rank;border-bottom:1px solid #ffffff20;padding:8px 0;font-size:13px}
+.score-list li:not(.score-message)::before{content:counter(rank) ".";display:inline-block;width:24px;color:#8deaff;font-weight:bold;vertical-align:top}
+.score-list li .score-row{display:inline-flex;justify-content:space-between;gap:8px;width:calc(100% - 28px);vertical-align:top}
+.score-row span{overflow-wrap:anywhere;min-width:0}
+.score-row strong{white-space:nowrap}
+.score-status{min-height:20px;color:#a3dff0;font-size:12px;text-align:center;margin:7px 0}
+.score-status:empty{min-height:0;margin:0}
+.score-note{font-size:11px;opacity:.85;line-height:1.4}
+@media (max-width:1200px){
+ .app-layout{max-width:1080px;grid-template-columns:minmax(205px,250px) minmax(0,760px);justify-content:center}
+ .leaderboard-panel{grid-column:1}
+ .shell{grid-column:2}
+}
+@media (max-width:850px){
+ .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
+ .shell{order:0}
+ .leaderboard-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
+ .leaderboard-panel h2{font-size:21px}
+ .score-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));column-gap:20px}
+}
+</style></head><body><div class="app-layout">
+<aside class="leaderboard-panel" aria-labelledby="scoreTitle">
   <h2 id="scoreTitle">🏆 LEADERBOARD</h2>
   <div id="scoreSubmitArea" class="score-submit" hidden>
-   <p>Game over! Your score: <strong id="finalScore">0</strong></p>
-   <form id="scoreForm">
-    <label for="nickname">Nickname (2–16 characters)
-     <input id="nickname" type="text" maxlength="16" minlength="2" pattern="[A-Za-z0-9_-]{2,16}" autocomplete="nickname" required placeholder="SpaceAce">
-    </label>
-    <button id="submitScore" type="submit">Submit Score</button>
-   </form>
+    <p>Game over! Your score: <strong id="finalScore">0</strong></p>
+    <form id="scoreForm">
+      <label for="nickname">Nickname (2–16 characters)
+        <input id="nickname" type="text" maxlength="16" minlength="2" pattern="[A-Za-z0-9_-]{2,16}" autocomplete="nickname" required placeholder="SpaceAce">
+      </label>
+      <button id="submitScore" type="submit">Submit Score</button>
+    </form>
   </div>
   <p id="scoreStatus" class="score-status" role="status" aria-live="polite"></p>
-  <ol id="scoreList" class="score-list"><li>Open leaderboard to load scores.</li></ol>
-  <p class="score-note">Top 10 highest scores. One personal best per anonymous player.</p>
- </div>
-</div>
+  <ol id="scoreList" class="score-list" aria-label="Top 10 scores"><li>Loading scores...</li></ol>
+  <p class="score-note">Worldwide TOP 10 · Personal best per player</p>
+</aside><main class="shell"><h1>STAR SWARM</h1><p class="credit">Created by MrJim</p><div class="controls"><label>♫ Music <input id="music" type="range" min="0" max="100" value="22"></label><label>✦ SFX <input id="sfx" type="range" min="0" max="100" value="40"></label><button id="start">START / RESTART</button><button id="mute">Mute</button></div><canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas><p>← → or A / D — move · Space — shoot · Enter — start · P — pause</p></main></div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, getDocs, setDoc, query, orderBy, limit, serverTimestamp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, setDoc, query, orderBy, limit, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyA-1f0mc7E6je47j0k-N2SHP1QbVb2b6mI",
@@ -52,7 +67,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
-const overlay = document.querySelector('#scoreOverlay');
+const panel = document.querySelector('.leaderboard-panel');
 const status = document.querySelector('#scoreStatus');
 const formArea = document.querySelector('#scoreSubmitArea');
 const form = document.querySelector('#scoreForm');
@@ -60,64 +75,55 @@ const nameInput = document.querySelector('#nickname');
 const submit = document.querySelector('#submitScore');
 const scoreList = document.querySelector('#scoreList');
 let pendingResult = null;
-let loading = false;
 try { nameInput.value = localStorage.getItem('starswarm.nickname') || ''; } catch (_) {}
 
 function setStatus(message) { status.textContent = message; }
-async function refreshScores() {
- if (loading) return;
- loading = true;
+function showListMessage(message) {
  scoreList.replaceChildren();
- const loadingRow = document.createElement('li');
- loadingRow.textContent = 'Loading scores...';
- scoreList.append(loadingRow);
- try {
-  const snapshot = await getDocs(query(collection(db, 'scores'), orderBy('score', 'desc'), limit(10)));
-  scoreList.replaceChildren();
-  if (snapshot.empty) {
-   const empty = document.createElement('li');
-   empty.textContent = 'No scores yet. Be the first!';
-   scoreList.append(empty);
-  }
-  snapshot.forEach((record) => {
-   const data = record.data();
-   const item = document.createElement('li');
-   const row = document.createElement('div');
-   row.className = 'score-row';
-   const name = document.createElement('span');
-   const points = document.createElement('strong');
-   name.textContent = data.nickname || 'Player';
-   points.textContent = Number(data.score || 0).toLocaleString('en-US');
-   row.append(name, points);
-   item.append(row);
-   scoreList.append(item);
-  });
- } catch (error) {
-  scoreList.replaceChildren();
+ const item = document.createElement('li');
+ item.className = 'score-message';
+ item.textContent = message;
+ scoreList.append(item);
+}
+function renderScores(snapshot) {
+ scoreList.replaceChildren();
+ if (snapshot.empty) { showListMessage('No scores yet. Be the first!'); return; }
+ snapshot.forEach((record) => {
+  const data = record.data();
   const item = document.createElement('li');
-  item.textContent = 'Leaderboard unavailable. Check Firestore setup and Security Rules.';
+  const row = document.createElement('div');
+  row.className = 'score-row';
+  const name = document.createElement('span');
+  const points = document.createElement('strong');
+  name.textContent = data.nickname || 'Player';
+  points.textContent = Number(data.score || 0).toLocaleString('en-US');
+  row.append(name, points);
+  item.append(row);
   scoreList.append(item);
+ });
+}
+// Live Firestore listener keeps the always-visible rankings up to date.
+onSnapshot(
+ query(collection(db, 'scores'), orderBy('score', 'desc'), limit(10)),
+ renderScores,
+ (error) => {
   console.error('Failed to load leaderboard:', error);
- } finally {
-  loading = false;
+  showListMessage('Leaderboard unavailable. Check your connection or Firebase settings.');
  }
-}
-function openScores() {
- overlay.hidden = false;
- formArea.hidden = !pendingResult;
- if (pendingResult) document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
- refreshScores();
-}
-function closeScores() { overlay.hidden = true; }
-document.querySelector('#showScores').addEventListener('click', openScores);
-document.querySelector('#closeScores').addEventListener('click', closeScores);
-overlay.addEventListener('click', (event) => { if (event.target === overlay) closeScores(); });
-document.addEventListener('keydown', (event) => { if (event.code === 'Escape' && !overlay.hidden) closeScores(); });
-window.addEventListener('starswarm:restart', () => { pendingResult = null; formArea.hidden = true; closeScores(); setStatus(''); });
+);
+window.addEventListener('starswarm:restart', () => {
+ pendingResult = null;
+ formArea.hidden = true;
+ setStatus('');
+});
 window.addEventListener('starswarm:gameover', (event) => {
  pendingResult = { score: event.detail.score, wave: event.detail.wave };
+ document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
+ formArea.hidden = false;
  setStatus('');
- openScores();
+ if (window.matchMedia('(max-width:850px)').matches) {
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+ }
 });
 form.addEventListener('submit', async (event) => {
  event.preventDefault();
@@ -145,7 +151,6 @@ form.addEventListener('submit', async (event) => {
    });
    setStatus('Score saved! Nice run.');
    try { localStorage.setItem('starswarm.nickname', nickname); } catch (_) {}
-   await refreshScores();
   }
   pendingResult = null;
   formArea.hidden = true;
@@ -188,7 +193,7 @@ let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
 function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
 function makeWave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<9;col++)enemies.push({x:90+col*67,y:125+row*60,homeX:90+col*67,homeY:125+row*60,row,col,hp:row===0?2:1,mode:'formation',t:0,phase:Math.random()*6.28});spawnClock=0}
-document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
+document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(e.target instanceof HTMLElement && e.target.closest('input,textarea,select,button,[contenteditable="true"]'))return;if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
 function burst(x,y,color,n=14){for(let i=0;i<n;i++){let a=Math.random()*Math.PI*2,v=1+Math.random()*4;particles.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,life:25+Math.random()*22,color})}}
 function fire(){if(player.cool>0)return;bullets.push({x:player.x,y:player.y-25});player.cool=10;tone(780,.09,'square',.065,sfxGain,-530)}
 function drawShip(x,y,scale=1,enemy=false,row=0){g.save();g.translate(x,y);g.scale(scale,scale);g.shadowBlur=17;g.shadowColor=enemy?(row===0?'#ff73b7':'#4affce'):'#4fcaff';g.fillStyle=enemy?(row===0?'#f254aa':row===1?'#f7ad50':'#43e0bf'):'#49bfff';g.beginPath();if(enemy){g.moveTo(0,-21);g.lineTo(13,-9);g.lineTo(23,-13);g.lineTo(18,12);g.lineTo(7,8);g.lineTo(0,17);g.lineTo(-7,8);g.lineTo(-18,12);g.lineTo(-23,-13);g.lineTo(-13,-9)}else{g.moveTo(0,-29);g.lineTo(11,-10);g.lineTo(24,-3);g.lineTo(30,18);g.lineTo(10,12);g.lineTo(0,21);g.lineTo(-10,12);g.lineTo(-30,18);g.lineTo(-24,-3);g.lineTo(-11,-10)}g.closePath();g.fill();g.shadowBlur=0;g.fillStyle=enemy?'#fff2a1':'#e2fbff';g.beginPath();g.moveTo(0,enemy?-12:-18);g.lineTo(6,3);g.lineTo(0,9);g.lineTo(-6,3);g.closePath();g.fill();if(!enemy){g.fillStyle='#ffb54e';g.fillRect(-17,16,7,7+Math.random()*9);g.fillRect(10,16,7,7+Math.random()*9)}g.restore()}
