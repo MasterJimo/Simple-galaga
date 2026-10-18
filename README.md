@@ -27,6 +27,29 @@ Shoot enemy formations, dodge incoming fire, and survive as many waves as possib
 
 The game automatically scales to fit inside your browser window while preserving the whole playfield. For a larger view, maximize your browser window.
 
+## Global leaderboard (Firebase)
+
+After **GAME OVER**, type a nickname (2–16 letters, digits, underscores or hyphens) and select **Submit Score**. Your score and wave are taken from the game automatically. Open **🏆 Leaderboard** at any time to view the worldwide **Top 10**.
+
+The game uses the Firebase project `starswarm-6589b` for Cloud Firestore and anonymous Firebase Authentication. Firebase is initialized directly in `index.html` with the web app's public configuration, so **no server, Firebase CLI, or build step is required** for the GitHub Pages game.
+
+### Required Firebase Console setup
+
+The following are one-time setup steps for the Firebase project owner:
+
+1. In **Build → Firestore Database**, create a **Standard edition** database if one does not already exist. The database may start in **production mode**.
+2. In **Build → Authentication → Sign-in method**, enable the **Anonymous** provider and select **Save**.
+3. Open **Firestore Database → Rules**. Replace the rules there with the entire contents of [firestore.rules](firestore.rules), then select **Publish**. **Saving the file in GitHub does not apply rules to Firebase automatically.** Do not use permissive test-mode rules.
+4. Load [StarSwarm online](https://masterjimo.github.io/StarSwarm/) (hard-refresh with **Ctrl + F5** if needed), finish a game, enter a nickname, submit the score, and open **Leaderboard** to confirm it appears. A new deployment may take a little time.
+
+### Moderate scores
+
+In the Firebase Console, open **Firestore Database → Data → scores**. Each document is a player's best score. Select an inappropriate entry and use **Delete document**; you can delete all documents in that collection to reset the ranking. Regular anonymous players are not allowed to delete or overwrite lower scores under these Security Rules. Firebase Console owners can delete documents using administrative privileges.
+
+### Security limitations
+
+Scores are produced in the browser. Although the Security Rules validate types, score range, nickname format, ownership, and best-score-only updates, **they cannot prove that a displayed score was earned fairly**. Anonymous users can also create additional identities by resetting their browser. This is a casual leaderboard with basic protections, *not* an anti-cheat solution; robust validation would need a trusted backend. The game keeps running even when Firebase is unavailable, but score submission and the global leaderboard require Firestore rules and network access.
+
 ## Play locally
 
 Download **`index.html`** from this repository and open it in Chrome, Edge, or Firefox. No local server or build tools are required.
