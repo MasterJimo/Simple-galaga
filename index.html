@@ -64,15 +64,15 @@
   <div id="scoreSubmitArea" class="score-submit" hidden>
     <p>Game over! Your score: <strong id="finalScore">0</strong></p>
     <form id="scoreForm">
-      <label for="nickname">Nickname (2–16 characters)
-        <input id="nickname" type="text" maxlength="16" minlength="2" pattern="[A-Za-z0-9_-]{2,16}" autocomplete="nickname" required placeholder="SpaceAce">
+      <label for="nickname">Nickname (1–16 characters)
+        <input id="nickname" type="text" maxlength="16" minlength="1" pattern="[A-Za-z0-9_-]{1,16}" autocomplete="nickname" required placeholder="SpaceAce">
       </label>
       <button id="submitScore" type="submit">Submit Score</button>
     </form>
   </div>
   <p id="scoreStatus" class="score-status" role="status" aria-live="polite"></p>
   <ol id="scoreList" class="score-list" aria-label="Top 10 scores"><li>Loading scores...</li></ol>
-  <p class="score-note">Worldwide TOP 10 · Personal best per player</p>
+  <p class="score-note">WORLDWIDE TOP 10 · EACH RUN COUNTS</p>
 </aside><main class="shell">
   <h1>STAR SWARM</h1>
   <p class="credit">Created by MrJim</p>
@@ -100,7 +100,7 @@
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-import { getFirestore, collection, doc, getDoc, setDoc, query, orderBy, limit, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
 
 const firebaseConfig = {
  apiKey: "AIzaSyA-1f0mc7E6je47j0k-N2SHP1QbVb2b6mI",
@@ -175,34 +175,32 @@ form.addEventListener('submit', async (event) => {
  event.preventDefault();
  if (!pendingResult || submit.disabled) return;
  const nickname = nameInput.value.trim();
- if (!/^[A-Za-z0-9_-]{2,16}$/.test(nickname)) {
-  setStatus('Use 2–16 letters, numbers, _ or -.');
+ if (!/^[A-Za-z0-9_-]{1,16}$/.test(nickname)) {
+  setStatus('Use 1–16 letters, numbers, _ or -.');
   return;
  }
  submit.disabled = true;
  setStatus('Saving score...');
  try {
   if (!auth.currentUser) await signInAnonymously(auth);
-  const ref = doc(db, 'scores', auth.currentUser.uid);
-  const previous = await getDoc(ref);
-  if (previous.exists() && previous.data().score >= pendingResult.score) {
-   setStatus('Your personal best is already ' + Number(previous.data().score).toLocaleString('en-US') + '. Beat it to update the leaderboard.');
-  } else {
-   await setDoc(ref, {
-    uid: auth.currentUser.uid,
-    nickname,
-    score: pendingResult.score,
-    wave: pendingResult.wave,
-    createdAt: serverTimestamp()
-   });
-   setStatus('Score saved! Nice run.');
-   try { localStorage.setItem('starswarm.nickname', nickname); } catch (_) {}
-  }
+  // Give each finished run its own Firestore document. Different runs,
+  // including runs from the same anonymous account, remain separate.
+  await addDoc(collection(db, 'scores'), {
+   uid: auth.currentUser.uid,
+   nickname,
+   score: pendingResult.score,
+   wave: pendingResult.wave,
+   createdAt: serverTimestamp()
+  });
+  setStatus('Score saved! It appears in TOP 10 if high enough.');
+  try { localStorage.setItem('starswarm.nickname', nickname); } catch (_) {}
   pendingResult = null;
   formArea.hidden = true;
  } catch (error) {
   console.error('Score submission failed:', error);
-  setStatus('Could not save. Check Anonymous Authentication and Firestore Security Rules, then try again.');
+  setStatus(error?.code === 'permission-denied'
+    ? 'Score not saved. The Firebase owner must publish the updated Firestore Rules for multiple runs.'
+    : 'Score not saved. Check your connection or Firebase settings, then try again.');
  } finally {
   submit.disabled = false;
  }
