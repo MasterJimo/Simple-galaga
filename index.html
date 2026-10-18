@@ -23,17 +23,40 @@
 .score-status{min-height:20px;color:#a3dff0;font-size:12px;text-align:center;margin:7px 0}
 .score-status:empty{min-height:0;margin:0}
 .score-note{font-size:11px;opacity:.85;line-height:1.4}
-@media (max-width:1200px){
- .app-layout{max-width:1080px;grid-template-columns:minmax(205px,250px) minmax(0,760px);justify-content:center}
- .leaderboard-panel{grid-column:1}
- .shell{grid-column:2}
+/* Audio and keyboard guide mirror the blue leaderboard panel. */
+.controls-panel{grid-column:3;grid-row:1;justify-self:start;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
+.controls-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
+.audio-settings{display:flex;flex-direction:column;gap:17px}
+.audio-control{display:flex;flex-direction:column;gap:9px;width:100%;font-size:16px;font-weight:800;letter-spacing:.04em;color:#d5efff}
+.audio-control input{display:block;width:100%;margin:0;accent-color:#56ddff;cursor:pointer}
+.action-buttons{display:flex;flex-direction:column;gap:10px;margin:21px 0 23px}
+.action-buttons button{font-size:15px;font-weight:800;letter-spacing:.025em;text-transform:uppercase;min-height:40px}
+.control-guide{border-top:1px solid #315076;padding-top:16px}
+.control-guide h3{font-size:17px;color:#8deaff;letter-spacing:.09em;margin:0 0 12px;text-align:center}
+.guide-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid #ffffff20;font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.018em;text-transform:uppercase}
+.guide-row strong{color:#e9f4ff;flex:1}
+.guide-row span{color:#8deaff;text-align:right;flex:1}
+@media (max-width:1150px){
+ .app-layout{grid-template-columns:minmax(170px,230px) minmax(0,720px) minmax(170px,230px);gap:12px;justify-content:center}
+ .leaderboard-panel,.controls-panel{padding:13px 10px}
+ .guide-row{font-size:13px}
 }
-@media (max-width:850px){
+@media (max-width:1000px){
  .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
  .shell{order:0}
- .leaderboard-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .leaderboard-panel h2{font-size:21px}
+ .controls-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
+ .leaderboard-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
+ .controls-panel h2,.leaderboard-panel h2{font-size:21px}
+ .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+ .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+ .control-guide{padding-top:12px}
+ .guide-row{font-size:16px}
  .score-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));column-gap:20px}
+}
+@media (max-width:470px){
+ .audio-settings{gap:12px}
+ .guide-row{font-size:14px}
+ .controls-panel h2{font-size:19px}
 }
 </style></head><body><div class="app-layout">
 <aside class="leaderboard-panel" aria-labelledby="scoreTitle">
@@ -50,7 +73,30 @@
   <p id="scoreStatus" class="score-status" role="status" aria-live="polite"></p>
   <ol id="scoreList" class="score-list" aria-label="Top 10 scores"><li>Loading scores...</li></ol>
   <p class="score-note">Worldwide TOP 10 · Personal best per player</p>
-</aside><main class="shell"><h1>STAR SWARM</h1><p class="credit">Created by MrJim</p><div class="controls"><label>♫ Music <input id="music" type="range" min="0" max="100" value="22"></label><label>✦ SFX <input id="sfx" type="range" min="0" max="100" value="40"></label><button id="start">START / RESTART</button><button id="mute">Mute</button></div><canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas><p>← → or A / D — move · Space — shoot · Enter — start · P — pause</p></main></div>
+</aside><main class="shell">
+  <h1>STAR SWARM</h1>
+  <p class="credit">Created by MrJim</p>
+  <canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas>
+</main>
+<aside class="controls-panel" aria-labelledby="controlsTitle">
+  <h2 id="controlsTitle">🎮 CONTROLS</h2>
+  <div class="audio-settings">
+    <label class="audio-control" for="music"><span>♫ MUSIC</span><input id="music" type="range" min="0" max="100" value="22" aria-label="Music volume"></label>
+    <label class="audio-control" for="sfx"><span>✦ SFX</span><input id="sfx" type="range" min="0" max="100" value="40" aria-label="Sound effects volume"></label>
+  </div>
+  <div class="action-buttons">
+    <button id="start" type="button">START / RESTART</button>
+    <button id="mute" type="button">MUTE</button>
+  </div>
+  <div class="control-guide" aria-label="Keyboard controls">
+    <h3>KEYBOARD</h3>
+    <div class="guide-row"><strong>← / → OR A / D</strong><span>MOVE</span></div>
+    <div class="guide-row"><strong>SPACE</strong><span>SHOOT</span></div>
+    <div class="guide-row"><strong>P</strong><span>PAUSE / RESUME</span></div>
+    <div class="guide-row"><strong>ENTER</strong><span>START / RESTART</span></div>
+  </div>
+</aside>
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
@@ -188,7 +234,7 @@ function setVolume(){if(!audio)return;musicGain.gain.value=muted?0:music.value/1
 function tone(freq,dur,type='sine',volume=.18,dest=sfxGain,slide=0){if(!audio)return;let t=audio.currentTime,o=audio.createOscillator(),v=audio.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);if(slide)o.frequency.exponentialRampToValueAtTime(Math.max(30,freq+slide),t+dur);v.gain.setValueAtTime(Math.max(.0001,volume),t);v.gain.exponentialRampToValueAtTime(.001,t+dur);o.connect(v);v.connect(dest);o.start(t);o.stop(t+dur+.02)}
 const melody=[220,0,330,440,0,392,330,0,262,0,330,392,0,294,247,0];
 function playMusic(){if(state==='playing'){let n=melody[beat++%melody.length];if(n)tone(n,.18,'triangle',.18,musicGain);if(beat%4===1)tone(110,.15,'sine',.15,musicGain)}}
-music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'Unmute':'Mute'};
+music.oninput=sfx.oninput=setVolume;document.querySelector('#mute').onclick=()=>{muted=!muted;setVolume();document.querySelector('#mute').textContent=muted?'UNMUTE':'MUTE'};
 let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],enemies=[],particles=[],stars=[],keys=new Set(),last=0,spawnClock=0;
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
 function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
