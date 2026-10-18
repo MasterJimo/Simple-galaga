@@ -19,7 +19,7 @@ Check deployment status at **Actions → Publish web game**. A green check mark 
 | **P** | Pause / resume |
 | **Enter** | Start / restart |
 
-Use the **Music** and **SFX** sliders to control background music and sound effects separately, or click **Mute** to silence both.
+On wide screens, the **CONTROLS** panel appears to the right of the centered playfield, matching the blue **LEADERBOARD** panel on the left. It includes the **MUSIC** and **SFX** volume sliders, **START / RESTART**, **MUTE**, and a large uppercase keyboard guide. On narrow screens, both panels move below the game. Use the two sliders to adjust music and sound effects independently, or select **MUTE** to silence both.
 
 ## Gameplay
 
