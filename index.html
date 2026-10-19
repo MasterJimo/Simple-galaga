@@ -67,6 +67,15 @@
 .touch-controls button:first-child{flex:1.4;background:#295076}
 .touch-controls button:active,.touch-controls button.pressed{background:#247bb8}
 @media (pointer:coarse){.touch-controls{display:flex}}
+
+/* Visible, dismissible in-game warning for obviously manipulated local scores. */
+.cheat-overlay[hidden]{display:none!important}
+.cheat-overlay{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:16px;background:rgba(2,3,14,.96)}
+.cheat-modal{width:min(100%,760px);max-height:95dvh;overflow-y:auto;padding:clamp(15px,3vw,26px);background:#101a31;border:2px solid #ff557c;border-radius:15px;box-shadow:0 0 60px #ff31575a;text-align:center}
+.cheat-modal h2{margin:0 0 12px;color:#ff7c9c;font-size:clamp(24px,4vw,40px);letter-spacing:.06em}
+.cheat-modal p{color:#f3deea;font-size:15px;margin:0 0 15px}
+.cheat-video{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#060a19}
+.cheat-modal button{font-weight:800;margin:15px auto 0;min-height:44px}
 </style></head><body><div class="app-layout">
 <aside class="leaderboard-panel" aria-labelledby="scoreTitle">
   <h2 id="scoreTitle">🏆 LEADERBOARD</h2>
@@ -123,6 +132,15 @@
   </div>
 </aside>
 </div>
+
+<div id="cheatOverlay" class="cheat-overlay" role="dialog" aria-modal="true" aria-labelledby="cheatHeading" hidden>
+  <div class="cheat-modal">
+    <h2 id="cheatHeading">🚨 CHEATING DETECTED! 🚨</h2>
+    <p>That score is impossible for this wave. Leaderboard submission blocked. You've been Rickrolled! 🎵</p>
+    <iframe id="rickrollFrame" class="cheat-video" title="Rickroll video" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+    <button id="closeCheatOverlay" type="button">BACK TO GAME</button>
+  </div>
+</div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
@@ -147,6 +165,31 @@ const nameInput = document.querySelector('#nickname');
 const submit = document.querySelector('#submitScore');
 const scoreList = document.querySelector('#scoreList');
 let pendingResult = null;
+
+const cheatOverlay = document.querySelector('#cheatOverlay');
+const rickrollFrame = document.querySelector('#rickrollFrame');
+// Every Star-Swarm enemy yields at most 150 points; each wave starts with 36 enemies.
+// This catches obvious score injection in the game UI, NOT direct Firestore API abuse.
+function isImplausibleResult(result) {
+ return !result || !Number.isSafeInteger(result.score)
+  || !Number.isSafeInteger(result.wave) || result.wave < 1
+  || result.score < 0 || result.score % 10 !== 0
+  || result.score > result.wave * 36 * 150;
+}
+function showCheatOverlay() {
+ pendingResult = null;
+ formArea.hidden = true;
+ setStatus('Rejected: impossible score for this wave.');
+ cheatOverlay.hidden = false;
+ // An interacted-with page may autoplay; browsers can still block playback with sound.
+ // Never change device volume, open extra windows, or prevent dismissal.
+ rickrollFrame.src = 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&playsinline=1&rel=0';
+ document.querySelector('#closeCheatOverlay').focus();
+}
+document.querySelector('#closeCheatOverlay').addEventListener('click', () => {
+ cheatOverlay.hidden = true;
+ rickrollFrame.removeAttribute('src'); // Stop playback immediately.
+});
 try { nameInput.value = localStorage.getItem('starswarm.nickname') || ''; } catch (_) {}
 
 function setStatus(message) { status.textContent = message; }
@@ -189,7 +232,16 @@ window.addEventListener('starswarm:restart', () => {
  setStatus('');
 });
 window.addEventListener('starswarm:gameover', (event) => {
- pendingResult = { score: event.detail.score, wave: event.detail.wave };
+ const result = { score: event.detail?.score, wave: event.detail?.wave };
+ if (isImplausibleResult(result)) { showCheatOverlay(); return; }
+ if (result.wave > 200) {
+  // Firestore rules cap wave at 200; don't accuse legitimate marathon players.
+  pendingResult = null;
+  formArea.hidden = true;
+  setStatus('Wave 200 is the current leaderboard limit.');
+  return;
+ }
+ pendingResult = result;
  document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
  formArea.hidden = false;
  setStatus('');
@@ -200,6 +252,7 @@ window.addEventListener('starswarm:gameover', (event) => {
 form.addEventListener('submit', async (event) => {
  event.preventDefault();
  if (!pendingResult || submit.disabled) return;
+ if (isImplausibleResult(pendingResult)) { showCheatOverlay(); return; }
  const nickname = nameInput.value.trim();
  if (!/^[A-Za-z0-9_-]{1,16}$/.test(nickname)) {
   setStatus('Use 1–16 letters, numbers, _ or -.');
