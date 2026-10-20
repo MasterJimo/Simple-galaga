@@ -18,7 +18,9 @@
     article{padding:28px;border:1px solid #40537c;border-radius:20px;background:linear-gradient(160deg,#1c2c4f,#111a30);box-shadow:0 16px 34px #0003}
     article h2{margin:0 0 12px;font-size:1.65rem}
     article p{color:#c3d4f0;line-height:1.65;min-height:75px}
-    .play{display:inline-block;margin:12px 0 6px;padding:12px 22px;border-radius:12px;color:#061126;background:#a8d0ff;font-weight:800;text-decoration:none}
+    .play{display:inline-flex;align-items:center;gap:12px;margin:12px 0 6px;padding:7px 18px 7px 8px;border-radius:12px;color:#061126;background:#a8d0ff;font-weight:800;text-decoration:none}
+    .ship-badge{display:inline-flex;align-items:center;justify-content:center;flex:none;width:46px;height:46px;border-radius:9px;background:#101f41;box-shadow:inset 0 0 0 1px #4a6a96}
+    .ship-icon{width:37px;height:37px;overflow:visible;filter:drop-shadow(0 0 3px #46cfff)}
     .play:hover,.play:focus-visible{background:#e2f0ff}
     .meta{margin-top:12px;font-size:.92rem}
     a{color:#acd2ff}
@@ -37,19 +39,46 @@
       <article>
         <h2>Star Swarm</h2>
         <p>Face wave after wave of enemies in a classic space shooter. Keep moving, keep firing, and see how long you can survive.</p>
-        <a class="play" href="../">Play Star Swarm →</a>
+        <a class="play" href="../">
+          <span class="ship-badge" aria-hidden="true">
+            <svg class="ship-icon" viewBox="-34 -34 68 75" focusable="false">
+              <path fill="#49bfff" d="M0 -29 L11 -10 L24 -3 L30 18 L10 12 L0 21 L-10 12 L-30 18 L-24 -3 L-11 -10 Z"/>
+              <path fill="#e2fbff" d="M0 -18 L6 3 L0 9 L-6 3 Z"/>
+              <rect x="-17" y="16" width="7" height="12" fill="#ffb54e"/>
+              <rect x="10" y="16" width="7" height="12" fill="#ffb54e"/>
+            </svg>
+          </span>
+          <span>Play Star Swarm →</span>
+        </a>
         <div class="meta"><a href="../about.html">About &amp; controls</a> · <a href="../privacy.html">Privacy</a></div>
       </article>
       <article>
         <h2>Asteroid Rush</h2>
         <p>Take control of your ship, dodge incoming asteroids, and blast rocks into pieces. How high can you score?</p>
-        <a class="play" href="/Asteroid-Rush/">Play Asteroid Rush →</a>
+        <a class="play" href="/Asteroid-Rush/">
+          <span class="ship-badge" aria-hidden="true">
+            <svg class="ship-icon" viewBox="-29 -37 58 71" focusable="false">
+              <defs>
+                <linearGradient id="asteroid-ship-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#095098"/>
+                  <stop offset="50%" stop-color="#2cc9e9"/>
+                  <stop offset="100%" stop-color="#062970"/>
+                </linearGradient>
+              </defs>
+              <path fill="url(#asteroid-ship-gradient)" stroke="#bbfaff" stroke-width="2.2" stroke-linejoin="round" d="M0 -31 L9 -8 L24 15 L19 23 L4 14 L0 21 L-4 14 L-19 23 L-24 15 L-9 -8 Z"/>
+              <path fill="none" stroke="#d7fbff" stroke-width="1.4" d="M0 -31 V19 M-22 17 L-7 6 M22 17 L7 6"/>
+              <path fill="#07345c" d="M0 -22 L7 -1 L0 11 L-7 -1 Z"/>
+              <rect x="-19" y="12" width="6" height="4" fill="#a3f7ff"/>
+              <rect x="13" y="12" width="6" height="4" fill="#a3f7ff"/>
+            </svg>
+          </span>
+          <span>Play Asteroid Rush →</span>
+        </a>
         <div class="meta"><a href="/Asteroid-Rush/about.html">About &amp; controls</a> · <a href="/Asteroid-Rush/privacy.html">Privacy</a></div>
       </article>
     </section>
     <footer>
-      Made by MasterJimo. This page does not display advertising or load an advertising tracker.
-      Visit each game's privacy page for information about that game.
+      © 2026 MasterJimo Arcade · Privacy: <a href="../privacy.html">Star Swarm</a> · <a href="/Asteroid-Rush/privacy.html">Asteroid Rush</a>
     </footer>
   </main>
 </body>
