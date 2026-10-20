@@ -5,27 +5,7 @@
 /* Keep the playfield centered on wide screens with equal left and right gutters. */
 .app-layout{width:100%;max-width:1500px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,760px) minmax(0,1fr);align-items:start;gap:clamp(12px,1.4vw,22px);margin:0 auto}
 .shell{grid-column:2;min-width:0}
-.leaderboard-panel{grid-column:1;grid-row:1;justify-self:end;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
-/* Leaderboard preserved in code/Firebase, temporarily hidden from players. */
-.leaderboard-panel[hidden]{display:none!important}
-.leaderboard-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 15px}
-.score-submit[hidden]{display:none!important}
-.score-submit{background:#142747;border:1px solid #315076;border-radius:8px;padding:10px;margin:10px 0}
-.score-submit p{color:#e9f4ff;margin:4px 0 9px}
-.score-submit form{display:flex;flex-direction:column;align-items:stretch;gap:9px}
-.score-submit label{display:flex;flex-direction:column;gap:5px;font-size:13px;color:#d2eaff}
-.score-submit input{width:100%;min-width:0;background:#060c1b;color:#fff;border:1px solid #58cfff;border-radius:5px;padding:8px}
-.score-submit button{width:100%}
-.score-list{list-style:none;padding:0;margin:7px 0 10px;counter-reset:rank}
-.score-list li{counter-increment:rank;border-bottom:1px solid #ffffff20;padding:8px 0;font-size:13px}
-.score-list li:not(.score-message)::before{content:counter(rank) ".";display:inline-block;width:24px;color:#8deaff;font-weight:bold;vertical-align:top}
-.score-list li .score-row{display:inline-flex;justify-content:space-between;gap:8px;width:calc(100% - 28px);vertical-align:top}
-.score-row span{overflow-wrap:anywhere;min-width:0}
-.score-row strong{white-space:nowrap}
-.score-status{min-height:20px;color:#a3dff0;font-size:12px;text-align:center;margin:7px 0}
-.score-status:empty{min-height:0;margin:0}
-.score-note{font-size:11px;opacity:.85;line-height:1.4}
-/* Audio and keyboard guide mirror the blue leaderboard panel. */
+/* Audio settings and keyboard guide share the blue arcade styling. */
 .controls-panel{grid-column:3;grid-row:1;justify-self:start;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
 .controls-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
 .audio-settings{display:flex;flex-direction:column;gap:17px}
@@ -42,21 +22,18 @@
 .guide-row span{color:#8deaff;text-align:right;flex:1}
 @media (max-width:1150px){
  .app-layout{grid-template-columns:minmax(170px,230px) minmax(0,720px) minmax(170px,230px);gap:12px;justify-content:center}
- .leaderboard-panel,.controls-panel{padding:13px 10px}
  .guide-row{font-size:13px}
 }
 @media (max-width:1000px){
  .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
  .shell{order:0}
  .controls-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .leaderboard-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .controls-panel h2,.leaderboard-panel h2{font-size:21px}
+ .controls-panel h2{font-size:21px}
   .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .track-select{grid-column:1/-1}
  .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
  .control-guide{padding-top:12px}
  .guide-row{font-size:16px}
- .score-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));column-gap:20px}
 }
 @media (max-width:470px){
  .audio-settings{gap:12px}
@@ -79,21 +56,7 @@
 .cheat-video{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#060a19}
 .cheat-modal button{font-weight:800;margin:15px auto 0;min-height:44px}
 </style></head><body><div class="app-layout">
-<aside class="leaderboard-panel" aria-labelledby="scoreTitle" hidden>
-  <h2 id="scoreTitle">🏆 LEADERBOARD</h2>
-  <div id="scoreSubmitArea" class="score-submit" hidden>
-    <p>Game over! Your score: <strong id="finalScore">0</strong></p>
-    <form id="scoreForm">
-      <label for="nickname">Nickname (1–16 characters)
-        <input id="nickname" type="text" maxlength="16" minlength="1" pattern="[A-Za-z0-9_-]{1,16}" autocomplete="nickname" required placeholder="SpaceAce">
-      </label>
-      <button id="submitScore" type="submit">Submit Score</button>
-    </form>
-  </div>
-  <p id="scoreStatus" class="score-status" role="status" aria-live="polite"></p>
-  <ol id="scoreList" class="score-list" aria-label="Top 10 scores"><li>Loading scores...</li></ol>
-  <p class="score-note">WORLDWIDE TOP 10 · EACH RUN COUNTS</p>
-</aside><main class="shell">
+<main class="shell">
   <h1>STAR SWARM</h1>
   <p class="credit">Created by MrJim</p>
   <canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas>
@@ -138,154 +101,36 @@
 <div id="cheatOverlay" class="cheat-overlay" role="dialog" aria-modal="true" aria-labelledby="cheatHeading" hidden>
   <div class="cheat-modal">
     <h2 id="cheatHeading">🚨 CHEATING DETECTED! 🚨</h2>
-    <p>That score is impossible for this wave. Leaderboard submission blocked. You've been Rickrolled! 🎵</p>
+    <p>That score looks impossible for this wave. You've been Rickrolled! 🎵</p>
     <iframe id="rickrollFrame" class="cheat-video" title="Rickroll video" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
     <button id="closeCheatOverlay" type="button">BACK TO GAME</button>
   </div>
 </div>
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, serverTimestamp, onSnapshot } from "https://www.gstatic.com/firebasejs/13.0.0/firebase-firestore.js";
-
-const firebaseConfig = {
- apiKey: "AIzaSyA-1f0mc7E6je47j0k-N2SHP1QbVb2b6mI",
- authDomain: "starswarm-6589b.firebaseapp.com",
- projectId: "starswarm-6589b",
- storageBucket: "starswarm-6589b.firebasestorage.app",
- messagingSenderId: "572136209247",
- appId: "1:572136209247:web:43a80c48628268add914ea"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-const panel = document.querySelector('.leaderboard-panel');
-const status = document.querySelector('#scoreStatus');
-const formArea = document.querySelector('#scoreSubmitArea');
-const form = document.querySelector('#scoreForm');
-const nameInput = document.querySelector('#nickname');
-const submit = document.querySelector('#submitScore');
-const scoreList = document.querySelector('#scoreList');
-let pendingResult = null;
-
-const cheatOverlay = document.querySelector('#cheatOverlay');
-const rickrollFrame = document.querySelector('#rickrollFrame');
-// Every Star-Swarm enemy yields at most 150 points; each wave starts with 36 enemies.
-// This catches obvious score injection in the game UI, NOT direct Firestore API abuse.
-function isImplausibleResult(result) {
- return !result || !Number.isSafeInteger(result.score)
-  || !Number.isSafeInteger(result.wave) || result.wave < 1
-  || result.score < 0 || result.score % 10 !== 0
-  || result.score > result.wave * 36 * 150;
-}
-function showCheatOverlay() {
- pendingResult = null;
- formArea.hidden = true;
- setStatus('Rejected: impossible score for this wave.');
- cheatOverlay.hidden = false;
- // An interacted-with page may autoplay; browsers can still block playback with sound.
- // Never change device volume, open extra windows, or prevent dismissal.
- rickrollFrame.src = 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&playsinline=1&rel=0';
- document.querySelector('#closeCheatOverlay').focus();
-}
-document.querySelector('#closeCheatOverlay').addEventListener('click', () => {
- cheatOverlay.hidden = true;
- rickrollFrame.removeAttribute('src'); // Stop playback immediately.
-});
-try { nameInput.value = localStorage.getItem('starswarm.nickname') || ''; } catch (_) {}
-
-function setStatus(message) { status.textContent = message; }
-function showListMessage(message) {
- scoreList.replaceChildren();
- const item = document.createElement('li');
- item.className = 'score-message';
- item.textContent = message;
- scoreList.append(item);
-}
-function renderScores(snapshot) {
- scoreList.replaceChildren();
- if (snapshot.empty) { showListMessage('No scores yet. Be the first!'); return; }
- snapshot.forEach((record) => {
-  const data = record.data();
-  const item = document.createElement('li');
-  const row = document.createElement('div');
-  row.className = 'score-row';
-  const name = document.createElement('span');
-  const points = document.createElement('strong');
-  name.textContent = data.nickname || 'Player';
-  points.textContent = Number(data.score || 0).toLocaleString('en-US');
-  row.append(name, points);
-  item.append(row);
-  scoreList.append(item);
- });
-}
-// Live Firestore listener keeps the always-visible rankings up to date.
-onSnapshot(
- query(collection(db, 'scores'), orderBy('score', 'desc'), limit(10)),
- renderScores,
- (error) => {
-  console.error('Failed to load leaderboard:', error);
-  showListMessage('Leaderboard unavailable. Check your connection or Firebase settings.');
- }
-);
-window.addEventListener('starswarm:restart', () => {
- pendingResult = null;
- formArea.hidden = true;
- setStatus('');
-});
-window.addEventListener('starswarm:gameover', (event) => {
- const result = { score: event.detail?.score, wave: event.detail?.wave };
- if (isImplausibleResult(result)) { showCheatOverlay(); return; }
- if (result.wave > 200) {
-  // Firestore rules cap wave at 200; don't accuse legitimate marathon players.
-  pendingResult = null;
-  formArea.hidden = true;
-  setStatus('Wave 200 is the current leaderboard limit.');
-  return;
- }
- pendingResult = result;
- document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
- formArea.hidden = false;
- setStatus('');
- if (!panel.hidden && window.matchMedia('(max-width:1000px)').matches) {
-  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
- }
-});
-form.addEventListener('submit', async (event) => {
- event.preventDefault();
- if (!pendingResult || submit.disabled) return;
- if (isImplausibleResult(pendingResult)) { showCheatOverlay(); return; }
- const nickname = nameInput.value.trim();
- if (!/^[A-Za-z0-9_-]{1,16}$/.test(nickname)) {
-  setStatus('Use 1–16 letters, numbers, _ or -.');
-  return;
- }
- submit.disabled = true;
- setStatus('Saving score...');
- try {
-  if (!auth.currentUser) await signInAnonymously(auth);
-  // Give each finished run its own Firestore document. Different runs,
-  // including runs from the same anonymous account, remain separate.
-  await addDoc(collection(db, 'scores'), {
-   uid: auth.currentUser.uid,
-   nickname,
-   score: pendingResult.score,
-   wave: pendingResult.wave,
-   createdAt: serverTimestamp()
+<script>
+// Keep the lighthearted Rickroll for obviously impossible local scores.
+// This is a visual easter egg, not server-side cheat protection.
+(() => {
+  'use strict';
+  const cheatOverlay = document.querySelector('#cheatOverlay');
+  const rickrollFrame = document.querySelector('#rickrollFrame');
+  function isImplausibleResult(result) {
+    return !result || !Number.isSafeInteger(result.score)
+      || !Number.isSafeInteger(result.wave) || result.wave < 1
+      || result.score < 0 || result.score % 10 !== 0
+      || result.score > result.wave * 36 * 150;
+  }
+  window.addEventListener('starswarm:gameover', (event) => {
+    if (!isImplausibleResult(event.detail)) return;
+    cheatOverlay.hidden = false;
+    // YouTube/browser may block autoplay or audio. Never force volume.
+    rickrollFrame.src = 'https://www.youtube-nocookie.com/embed/dQw4w9WgXcQ?autoplay=1&playsinline=1&rel=0';
+    document.querySelector('#closeCheatOverlay').focus();
   });
-  setStatus('Score saved! It appears in TOP 10 if high enough.');
-  try { localStorage.setItem('starswarm.nickname', nickname); } catch (_) {}
-  pendingResult = null;
-  formArea.hidden = true;
- } catch (error) {
-  console.error('Score submission failed:', error);
-  setStatus(error?.code === 'permission-denied'
-    ? 'Score not saved. The Firebase owner must publish the updated Firestore Rules for multiple runs.'
-    : 'Score not saved. Check your connection or Firebase settings, then try again.');
- } finally {
-  submit.disabled = false;
- }
-});
+  document.querySelector('#closeCheatOverlay').addEventListener('click', () => {
+    cheatOverlay.hidden = true;
+    rickrollFrame.removeAttribute('src');
+  });
+})();
 </script>
 <script>
 (()=>{'use strict';
@@ -537,7 +382,7 @@ bindTouch('touchLeft','left');bindTouch('touchRight','right');bindTouch('touchFi
 window.addEventListener('blur',()=>{for(const key in touchKeys)touchKeys[key]=false;document.querySelectorAll('.touch-controls button').forEach(b=>b.classList.remove('pressed'))});
 let state='menu',score=0,lives=3,wave=1,frame=0,player,bullets=[],enemyShots=[],enemies=[],particles=[],stars=[],keys=new Set(),last=0,spawnClock=0;
 for(let i=0;i<115;i++)stars.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.8+.3,s:Math.random()*1.7+.35});
-function reset(){window.dispatchEvent(new Event('starswarm:restart'));soundInit();resetMusic();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
+function reset(){soundInit();resetMusic();state='playing';score=0;lives=3;wave=1;frame=0;bullets=[];enemyShots=[];particles=[];player={x:W/2,y:H-78,cool:0,inv:110};makeWave()}
 function makeWave(){enemies=[];for(let row=0;row<4;row++)for(let col=0;col<9;col++)enemies.push({x:90+col*67,y:125+row*60,homeX:90+col*67,homeY:125+row*60,row,col,hp:row===0?2:1,mode:'formation',t:0,phase:Math.random()*6.28});spawnClock=0}
 c.addEventListener('pointerdown',e=>{if(e.pointerType==='mouse'&&!window.matchMedia('(pointer:coarse)').matches)return;if(!window.matchMedia('(pointer:coarse)').matches)return;if(state==='menu'||state==='gameover'){e.preventDefault();reset()}});
 document.querySelector('#start').onclick=reset;document.addEventListener('keydown',e=>{if(e.target instanceof HTMLElement && e.target.closest('input,textarea,select,button,[contenteditable="true"]'))return;if(['ArrowLeft','ArrowRight','Space','ArrowUp'].includes(e.code))e.preventDefault();keys.add(e.code);if(e.code==='Enter'&&state!=='playing')reset();if(e.code==='KeyP'){if(state==='playing')state='paused';else if(state==='paused')state='playing'}if(e.code==='Space'&&state==='menu')reset();if(audio)audio.resume()});document.addEventListener('keyup',e=>keys.delete(e.code));
