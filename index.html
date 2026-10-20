@@ -31,6 +31,9 @@
  .shell{order:0}
  .left-sidebar{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px)}
  .control-guide-panel,.credits-panel{width:100%;padding:15px}
+ /* On phones show credits immediately below the game, then the controls guide. */
+ .credits-panel{order:0}
+ .control-guide-panel{order:1}
  .controls-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
  .controls-panel h2,.control-guide-panel h2,.credits-panel h2{font-size:21px}
   .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
