@@ -12,13 +12,7 @@
     body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -12%,#1b4177 0,#0b1732 46%,#070b19 100%);color:var(--ink)}
     body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:radial-gradient(#a6dfff 1px,transparent 1px),radial-gradient(#fff 1px,transparent 1px);background-size:100px 100px,157px 157px;background-position:20px 30px,84px 70px;mask-image:linear-gradient(180deg,#000,transparent 90%)}
     main{position:relative;max-width:1190px;margin:auto;padding:30px clamp(16px,4vw,40px) 35px}
-    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:21px;border-bottom:1px solid #4a608440}
-    .brand{display:flex;gap:10px;align-items:center;font-weight:900;letter-spacing:.13em;font-size:14px;color:#e8f8ff;text-decoration:none}
-    .brand-mark{display:grid;place-items:center;height:34px;width:34px;border-radius:9px;border:1px solid #60cded88;background:#102b50;color:#79dfff;text-shadow:0 0 12px #55cfff}
-    .online{font-size:12px;letter-spacing:.12em;color:#b7d3e9;font-weight:800;white-space:nowrap}
-    .online::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#57ffc7;box-shadow:0 0 11px #57ffc7;margin-right:9px;vertical-align:middle}
-    .hero{padding:clamp(35px,6vw,68px) 0 16px;max-width:860px}
-    .eyebrow{color:#83dfff;font-size:.78rem;font-weight:900;letter-spacing:.23em;text-transform:uppercase;margin:0 0 14px}
+    .hero{padding:clamp(18px,3vw,36px) 0 16px;max-width:860px}
     h1{font-size:clamp(2.45rem,6.1vw,5.25rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.055em}
     h1 span{color:#8deaff;text-shadow:0 0 35px #41aaff5e}
     .intro{max-width:720px;color:var(--muted);font-size:clamp(1rem,1.6vw,1.15rem);line-height:1.7;margin:0}
@@ -60,19 +54,13 @@
     footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid #49618b88;padding-top:23px;color:#acbfdc;font-size:.83rem;line-height:1.7}
     footer a{color:#afccf3}
     @media(max-width:960px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.game-card.breakout{grid-column:1/-1}.game-card.breakout .scene{height:156px}}
-    @media(max-width:620px){main{padding:18px 16px 28px}.topbar{padding-bottom:16px}.brand{font-size:12px;letter-spacing:.09em}.online{font-size:10px;letter-spacing:.05em}.hero{padding:36px 0 20px}h1{font-size:clamp(2.65rem,10vw,4rem)}.arcade-tags{gap:7px}.arcade-tags span{font-size:.65rem;padding:6px 9px}.collection-heading{margin:16px 0 13px}.collection-heading span{font-size:.68rem}.grid{grid-template-columns:1fr;gap:16px}.game-card.breakout{grid-column:auto}.scene,.game-card.breakout .scene{height:135px}.card-content{padding:20px}.game-card p{margin-bottom:21px;min-height:0}.meta{padding-top:13px}footer{font-size:.78rem}}
+    @media(max-width:620px){main{padding:18px 16px 28px}.hero{padding:18px 0 20px}h1{font-size:clamp(2.65rem,10vw,4rem)}.arcade-tags{gap:7px}.arcade-tags span{font-size:.65rem;padding:6px 9px}.collection-heading{margin:16px 0 13px}.collection-heading span{font-size:.68rem}.grid{grid-template-columns:1fr;gap:16px}.game-card.breakout{grid-column:auto}.scene,.game-card.breakout .scene{height:135px}.card-content{padding:20px}.game-card p{margin-bottom:21px;min-height:0}.meta{padding-top:13px}footer{font-size:.78rem}}
     @media(prefers-reduced-motion:reduce){.game-card,.play{transition:none}.game-card:hover,.play:hover{transform:none}}
   </style>
 </head>
 <body>
   <main>
-    <nav class="topbar" aria-label="Arcade home">
-      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">✦</span><span>MASTERJIMO ARCADE</span></a>
-      <span class="online">03 GAMES ONLINE</span>
-    </nav>
-
     <header class="hero">
-      <p class="eyebrow">✦ FREE BROWSER ARCADE</p>
       <h1>Three games.<br><span>One arcade.</span></h1>
       <p class="intro">From surviving alien swarms and weaving through asteroids to shattering glowing bricks, your next high score is one click away. Pick your challenge, jump straight in, and enjoy three free arcade games — no downloads or sign-ups.</p>
       <div class="arcade-tags" aria-label="Arcade features">
@@ -184,13 +172,13 @@
               </svg>
             </span><span class="play-label">PLAY NEON BREAKOUT</span><span class="play-arrow" aria-hidden="true">↗</span>
           </a>
-          <div class="meta"><a href="https://github.com/MasterJimo/Neon-Breakout">Source on GitHub ↗</a><span class="sep">·</span><span>Keyboard &amp; touch controls</span></div>
+          <div class="meta"><a href="/Neon-Breakout/about.html">About &amp; controls</a><span class="sep">·</span><a href="/Neon-Breakout/privacy.html">Privacy</a></div>
         </div>
       </article>
     </section>
     <footer>
       <span>© 2026 MasterJimo Arcade · Made for quick games and big scores.</span>
-      <span>Privacy: <a href="../privacy.html">Star Swarm</a> · <a href="/Asteroid-Rush/privacy.html">Asteroid Rush</a></span>
+      <span>Privacy: <a href="../privacy.html">Star Swarm</a> · <a href="/Asteroid-Rush/privacy.html">Asteroid Rush</a> · <a href="/Neon-Breakout/privacy.html">Neon Breakout</a></span>
     </footer>
   </main>
 </body>
