@@ -1,13 +1,14 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Swarm — arcade shooter</title><style>
 *{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:12px;display:flex;flex-direction:column;align-items:center}h1{margin:0 0 5px;letter-spacing:.22em;text-align:center;color:#8deaff;text-shadow:0 0 20px #21a9ff}p{margin:5px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:7px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}
-.credit{font-size:14px;opacity:.8;margin:5px 0;letter-spacing:.04em}
 /* Keep the playfield centered on wide screens with equal left and right gutters. */
 .app-layout{width:100%;max-width:1500px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,760px) minmax(0,1fr);align-items:start;gap:clamp(12px,1.4vw,22px);margin:0 auto}
 .shell{grid-column:2;min-width:0}
-/* Audio settings and keyboard guide share the blue arcade styling. */
-.controls-panel{grid-column:3;grid-row:1;justify-self:start;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
-.controls-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
+/* Matching panels on either side of the centered playfield. */
+.controls-panel,.control-guide-panel{grid-row:1;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
+.controls-panel{grid-column:3;justify-self:start}
+.control-guide-panel{grid-column:1;justify-self:end}
+.controls-panel h2,.control-guide-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
 .audio-settings{display:flex;flex-direction:column;gap:17px}
 .audio-control{display:flex;flex-direction:column;gap:9px;width:100%;font-size:16px;font-weight:800;letter-spacing:.04em;color:#d5efff}
 .audio-control input{display:block;width:100%;margin:0;accent-color:#56ddff;cursor:pointer}
@@ -15,8 +16,6 @@
 .audio-control select:focus-visible{outline:2px solid #8deaff;outline-offset:2px}
 .action-buttons{display:flex;flex-direction:column;gap:10px;margin:21px 0 23px}
 .action-buttons button{font-size:15px;font-weight:800;letter-spacing:.025em;text-transform:uppercase;min-height:40px}
-.control-guide{border-top:1px solid #315076;padding-top:16px}
-.control-guide h3{font-size:17px;color:#8deaff;letter-spacing:.09em;margin:0 0 12px;text-align:center}
 .guide-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid #ffffff20;font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.018em;text-transform:uppercase}
 .guide-row strong{color:#e9f4ff;flex:1}
 .guide-row span{color:#8deaff;text-align:right;flex:1}
@@ -27,18 +26,19 @@
 @media (max-width:1000px){
  .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
  .shell{order:0}
- .controls-panel{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .controls-panel h2{font-size:21px}
+ .control-guide-panel,.controls-panel{position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
+ .control-guide-panel{order:1}
+ .controls-panel{order:2}
+ .controls-panel h2,.control-guide-panel h2{font-size:21px}
   .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .track-select{grid-column:1/-1}
  .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
- .control-guide{padding-top:12px}
  .guide-row{font-size:16px}
 }
 @media (max-width:470px){
  .audio-settings{gap:12px}
  .guide-row{font-size:14px}
- .controls-panel h2{font-size:19px}
+ .controls-panel h2,.control-guide-panel h2{font-size:19px}
 }
 
 .touch-controls{display:none;width:100%;max-width:720px;gap:12px;margin:10px auto 0;justify-content:space-between;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -56,9 +56,17 @@
 .cheat-video{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#060a19}
 .cheat-modal button{font-weight:800;margin:15px auto 0;min-height:44px}
 </style></head><body><div class="app-layout">
+<aside class="control-guide-panel" aria-labelledby="guideTitle">
+  <h2 id="guideTitle">🎮 CONTROLS</h2>
+  <div class="control-guide" aria-label="Keyboard controls">
+    <div class="guide-row"><strong>← / → OR A / D</strong><span>MOVE</span></div>
+    <div class="guide-row"><strong>SPACE</strong><span>SHOOT</span></div>
+    <div class="guide-row"><strong>P</strong><span>PAUSE / RESUME</span></div>
+    <div class="guide-row"><strong>ENTER</strong><span>START / RESTART</span></div>
+  </div>
+</aside>
 <main class="shell">
   <h1>STAR SWARM</h1>
-  <p class="credit">Created by MrJim</p>
   <canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas>
   <div class="touch-controls" aria-label="Touch game controls">
     <button type="button" id="touchFire" aria-label="Shoot">FIRE</button>
@@ -87,13 +95,6 @@
   <div class="action-buttons">
     <button id="start" type="button">START / RESTART</button>
     <button id="mute" type="button">MUTE</button>
-  </div>
-  <div class="control-guide" aria-label="Keyboard controls">
-    <h3>🎮 CONTROLS</h3>
-    <div class="guide-row"><strong>← / → OR A / D</strong><span>MOVE</span></div>
-    <div class="guide-row"><strong>SPACE</strong><span>SHOOT</span></div>
-    <div class="guide-row"><strong>P</strong><span>PAUSE / RESUME</span></div>
-    <div class="guide-row"><strong>ENTER</strong><span>START / RESTART</span></div>
   </div>
 </aside>
 </div>
