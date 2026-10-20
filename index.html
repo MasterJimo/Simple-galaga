@@ -6,9 +6,9 @@
 .shell{grid-column:2;min-width:0}
 /* Matching panels on either side of the centered playfield. */
 .left-sidebar{grid-column:1;grid-row:1;justify-self:end;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;display:flex;flex-direction:column;gap:14px}
-.controls-panel,.control-guide-panel,.credits-panel{width:100%;min-width:0;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
+.controls-panel,.credits-panel{width:100%;min-width:0;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
 .controls-panel{grid-column:3;grid-row:1;justify-self:start;width:min(100%,280px);position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain}
-.controls-panel h2,.control-guide-panel h2,.credits-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
+.controls-panel h2,.credits-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 16px}
 .audio-settings{display:flex;flex-direction:column;gap:17px}
 .audio-control{display:flex;flex-direction:column;gap:9px;width:100%;font-size:16px;font-weight:800;letter-spacing:.04em;color:#d5efff}
 .audio-control input{display:block;width:100%;margin:0;accent-color:#56ddff;cursor:pointer}
@@ -22,6 +22,10 @@
 .credits-panel .donate-btn[hidden] + .credits-name{margin-top:0}
 .credits-panel .donate-btn:hover{background:#113c63}
 .credits-panel{padding:12px}
+@media (min-width:1001px){
+ .left-sidebar{min-height:min(550px,calc(100dvh - 24px))}
+ .credits-panel{flex:1}
+}
 .credits-panel h2{font-size:13px;letter-spacing:.12em;margin:0 0 8px}
 .credits-panel .info-game-title{text-align:center;color:#e9f4ff;font-size:17px;font-weight:800;letter-spacing:.10em;margin:0 0 5px}
 .credits-panel .credits-name{text-align:center;color:#aebdd4;font-size:12px;margin:0}
@@ -31,34 +35,24 @@
 .credits-links a:hover{background:#195d90}
 .credits-links a:focus-visible{outline:3px solid #8deaff;outline-offset:3px}
 .credits-panel .credits-status{font-size:12px;line-height:1.5;color:#aebdd4;margin:12px 0 0;text-align:left}
-.guide-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid #ffffff20;font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.018em;text-transform:uppercase}
-.guide-row strong{color:#e9f4ff;flex:1}
-.guide-row span{color:#8deaff;text-align:right;flex:1}
 @media (max-width:1150px){
  .app-layout{grid-template-columns:minmax(170px,230px) minmax(0,720px) minmax(170px,230px);gap:12px;justify-content:center}
- .guide-row{font-size:13px}
 }
 @media (max-width:1000px){
  .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
  .shell{order:0}
  .left-sidebar{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px)}
- .control-guide-panel{width:100%;padding:15px}
  .credits-panel{width:100%;padding:12px}
- /* On phones show credits immediately below the game, then the controls guide. */
- .credits-panel{order:0}
- .control-guide-panel{order:1}
  .controls-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .controls-panel h2,.control-guide-panel h2{font-size:21px}
+ .controls-panel h2{font-size:21px}
   .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .track-select{grid-column:1/-1}
  .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
  .action-buttons button:first-child{grid-column:1/-1}
- .guide-row{font-size:16px}
 }
 @media (max-width:470px){
  .audio-settings{gap:12px}
- .guide-row{font-size:14px}
- .controls-panel h2,.control-guide-panel h2{font-size:19px}
+ .controls-panel h2{font-size:19px}
 }
 
 .touch-controls{display:none;width:100%;max-width:720px;gap:12px;margin:10px auto 0;justify-content:space-between;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -77,15 +71,6 @@
 .cheat-modal button{font-weight:800;margin:15px auto 0;min-height:44px}
 </style></head><body><div class="app-layout">
 <div class="left-sidebar">
-<aside class="control-guide-panel" aria-labelledby="guideTitle">
-  <h2 id="guideTitle">🎮 CONTROLS</h2>
-  <div class="control-guide" aria-label="Keyboard controls">
-    <div class="guide-row"><strong>← / → OR A / D</strong><span>MOVE</span></div>
-    <div class="guide-row"><strong>SPACE</strong><span>SHOOT</span></div>
-    <div class="guide-row"><strong>P</strong><span>PAUSE / RESUME</span></div>
-    <div class="guide-row"><strong>ENTER</strong><span>START / RESTART</span></div>
-  </div>
-</aside>
 <section class="credits-panel" aria-labelledby="infoTitle">
   <h2 id="infoTitle">INFORMATION</h2>
   <p class="info-game-title">STAR SWARM</p>
