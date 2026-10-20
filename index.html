@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Star Swarm — arcade shooter</title><style>
-*{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:12px;display:flex;flex-direction:column;align-items:center}h1{margin:0 0 5px;letter-spacing:.22em;text-align:center;color:#8deaff;text-shadow:0 0 20px #21a9ff}p{margin:5px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:7px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}
+*{box-sizing:border-box}body{margin:0;background:#060a19;color:#e9f4ff;font:16px system-ui,Arial;display:grid;place-items:center;min-height:100vh}.shell{width:min(100%,760px);padding:12px;display:flex;flex-direction:column;align-items:center}p{margin:5px 0;text-align:center;color:#aebdd4}.controls{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:7px 0}.controls label{font-size:13px;display:flex;align-items:center;gap:7px}input{accent-color:#56ddff;width:105px}canvas{display:block;width:100%;height:auto;max-width:100%;margin:0 auto;border:1px solid #315076;border-radius:12px;box-shadow:0 0 45px #13519c55;background:#020512}button{background:#113c63;border:1px solid #58cfff;border-radius:7px;color:white;padding:7px 12px;cursor:pointer}button:hover{background:#195d90}
 /* Keep the playfield centered on wide screens with equal left and right gutters. */
 .app-layout{width:100%;max-width:1500px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,760px) minmax(0,1fr);align-items:start;gap:clamp(12px,1.4vw,22px);margin:0 auto}
 .shell{grid-column:2;min-width:0}
@@ -21,7 +21,10 @@
 .credits-panel .donate-btn[hidden]{display:none!important}
 .credits-panel .donate-btn[hidden] + .credits-name{margin-top:0}
 .credits-panel .donate-btn:hover{background:#113c63}
-.credits-panel .credits-name{text-align:center;color:#aebdd4;font-size:13px;margin:15px 0 0}
+.credits-panel{padding:12px}
+.credits-panel h2{font-size:13px;letter-spacing:.12em;margin:0 0 8px}
+.credits-panel .info-game-title{text-align:center;color:#e9f4ff;font-size:17px;font-weight:800;letter-spacing:.10em;margin:0 0 5px}
+.credits-panel .credits-name{text-align:center;color:#aebdd4;font-size:12px;margin:0}
 .guide-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid #ffffff20;font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.018em;text-transform:uppercase}
 .guide-row strong{color:#e9f4ff;flex:1}
 .guide-row span{color:#8deaff;text-align:right;flex:1}
@@ -33,12 +36,13 @@
  .app-layout{display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px}
  .shell{order:0}
  .left-sidebar{order:1;position:static;max-height:none;overflow:visible;width:min(100%,760px)}
- .control-guide-panel,.credits-panel{width:100%;padding:15px}
+ .control-guide-panel{width:100%;padding:15px}
+ .credits-panel{width:100%;padding:12px}
  /* On phones show credits immediately below the game, then the controls guide. */
  .credits-panel{order:0}
  .control-guide-panel{order:1}
  .controls-panel{order:2;position:static;max-height:none;overflow:visible;width:min(100%,760px);padding:15px}
- .controls-panel h2,.control-guide-panel h2,.credits-panel h2{font-size:21px}
+ .controls-panel h2,.control-guide-panel h2{font-size:21px}
   .audio-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
   .track-select{grid-column:1/-1}
  .action-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
@@ -48,7 +52,7 @@
 @media (max-width:470px){
  .audio-settings{gap:12px}
  .guide-row{font-size:14px}
- .controls-panel h2,.control-guide-panel h2,.credits-panel h2{font-size:19px}
+ .controls-panel h2,.control-guide-panel h2{font-size:19px}
 }
 
 .touch-controls{display:none;width:100%;max-width:720px;gap:12px;margin:10px auto 0;justify-content:space-between;touch-action:none;user-select:none;-webkit-user-select:none}
@@ -76,14 +80,14 @@
     <div class="guide-row"><strong>ENTER</strong><span>START / RESTART</span></div>
   </div>
 </aside>
-<section class="credits-panel" aria-labelledby="creditsTitle">
-  <h2 id="creditsTitle">CREDITS</h2>
+<section class="credits-panel" aria-labelledby="infoTitle">
+  <h2 id="infoTitle">INFORMATION</h2>
+  <p class="info-game-title">STAR SWARM</p>
   <button class="donate-btn" type="button" disabled hidden title="Coming soon">❤ DONATE</button>
   <p class="credits-name">Created by MrJim</p>
 </section>
 </div>
 <main class="shell">
-  <h1>STAR SWARM</h1>
   <canvas id="game" width="720" height="680" aria-label="Space shooter game"></canvas>
   <div class="touch-controls" aria-label="Touch game controls">
     <button type="button" id="touchFire" aria-label="Shoot">FIRE</button>
