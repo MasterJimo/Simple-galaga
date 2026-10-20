@@ -38,17 +38,6 @@ The currently tracked game files contain **no downloaded sprite sheets, image pa
 | Shooting, hits, damage and wave sound effects | Synthesised using Web Audio API; no external SFX files | [`index.html`](index.html), `tone()` |
 | Arcade hub illustrations | Inline SVG artwork in this project; no third-party image assets identified | [`arcade/index.html`](arcade/index.html) |
 
-### External video easter egg
-
-The game also contains an optional **embedded YouTube music video** that appears when a local score is flagged as implausible. This is **not** part of the selectable game soundtrack and is **not downloaded or stored in the repository**.
-
-- **Song:** [“Never Gonna Give You Up”](https://www.youtube.com/watch?v=dQw4w9WgXcQ) (1987).
-- **Performer:** **Rick Astley**.
-- **Songwriters / producers:** **Mike Stock, Matt Aitken and Pete Waterman** (Stock Aitken Waterman).
-- **Other recording credits:** **Pete Hammond** (mixing), **Mark McGuire** (sound engineering); **Dee Lewis, Shirley Lewis, Mae McKenna and Suzanne Rhatigan** (backing vocals).
-- **Recording rights:** ℗ 1987 BMG Rights Management (UK) Limited, as shown in the [official track credits](https://www.youtube.com/watch?v=lYBUbBu4W08).
-- **Where it appears:** [`index.html`](index.html), in the `youtube-nocookie.com` iframe opened by the score-check easter egg. The music and video belong to their respective rights holders; their inclusion as a link/embed does not make them freely licensed game assets.
-
 **Asset source note:** No other third-party asset sources or download credits are identified in the tracked repository files. If new assets are added later, their creator, source URL, license and local file path should be documented here.
 
 ## Play and project
