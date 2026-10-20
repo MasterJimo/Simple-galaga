@@ -18,6 +18,8 @@
 .action-buttons button{font-size:15px;font-weight:800;letter-spacing:.025em;text-transform:uppercase;min-height:40px}
 .action-buttons button:disabled{opacity:.5;cursor:not-allowed}
 .credits-panel .donate-btn{display:block;width:100%;min-height:42px;font-size:15px;font-weight:800;letter-spacing:.06em;opacity:.65;cursor:not-allowed}
+.credits-panel .donate-btn[hidden]{display:none!important}
+.credits-panel .donate-btn[hidden] + .credits-name{margin-top:0}
 .credits-panel .donate-btn:hover{background:#113c63}
 .credits-panel .credits-name{text-align:center;color:#aebdd4;font-size:13px;margin:15px 0 0}
 .guide-row{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;padding:12px 0;border-bottom:1px solid #ffffff20;font-size:15px;font-weight:800;line-height:1.3;letter-spacing:.018em;text-transform:uppercase}
@@ -76,8 +78,8 @@
 </aside>
 <section class="credits-panel" aria-labelledby="creditsTitle">
   <h2 id="creditsTitle">CREDITS</h2>
-  <button class="donate-btn" type="button" disabled title="Coming soon">❤ DONATE</button>
-  <p class="credits-name">Created by Mr Jim</p>
+  <button class="donate-btn" type="button" disabled hidden title="Coming soon">❤ DONATE</button>
+  <p class="credits-name">Created by MrJim</p>
 </section>
 </div>
 <main class="shell">
