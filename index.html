@@ -6,6 +6,8 @@
 .app-layout{width:100%;max-width:1500px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,760px) minmax(0,1fr);align-items:start;gap:clamp(12px,1.4vw,22px);margin:0 auto}
 .shell{grid-column:2;min-width:0}
 .leaderboard-panel{grid-column:1;grid-row:1;justify-self:end;width:min(100%,280px);min-width:0;position:sticky;top:12px;max-height:calc(100dvh - 24px);overflow-y:auto;overscroll-behavior:contain;background:linear-gradient(180deg,#111f3d,#091126);border:1px solid #315076;border-radius:12px;padding:15px 12px;box-shadow:0 0 35px #13519c30}
+/* Leaderboard preserved in code/Firebase, temporarily hidden from players. */
+.leaderboard-panel[hidden]{display:none!important}
 .leaderboard-panel h2{color:#8deaff;letter-spacing:.1em;font-size:clamp(16px,1.5vw,22px);text-align:center;margin:0 0 15px}
 .score-submit[hidden]{display:none!important}
 .score-submit{background:#142747;border:1px solid #315076;border-radius:8px;padding:10px;margin:10px 0}
@@ -77,7 +79,7 @@
 .cheat-video{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:8px;background:#060a19}
 .cheat-modal button{font-weight:800;margin:15px auto 0;min-height:44px}
 </style></head><body><div class="app-layout">
-<aside class="leaderboard-panel" aria-labelledby="scoreTitle">
+<aside class="leaderboard-panel" aria-labelledby="scoreTitle" hidden>
   <h2 id="scoreTitle">🏆 LEADERBOARD</h2>
   <div id="scoreSubmitArea" class="score-submit" hidden>
     <p>Game over! Your score: <strong id="finalScore">0</strong></p>
@@ -245,7 +247,7 @@ window.addEventListener('starswarm:gameover', (event) => {
  document.querySelector('#finalScore').textContent = pendingResult.score.toLocaleString('en-US');
  formArea.hidden = false;
  setStatus('');
- if (window.matchMedia('(max-width:1000px)').matches) {
+ if (!panel.hidden && window.matchMedia('(max-width:1000px)').matches) {
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
  }
 });
