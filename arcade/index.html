@@ -20,7 +20,6 @@
     .arcade-tags span{color:#b9cee9;border:1px solid #49618b88;border-radius:999px;padding:7px 12px;font-size:.72rem;font-weight:800;letter-spacing:.08em}
     .collection-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:20px 0 15px}
     .collection-heading h2{font-size:1rem;letter-spacing:.17em;color:#d8eafb;margin:0}
-    .collection-heading span{font-size:.75rem;color:#9fbbdd;letter-spacing:.13em}
     .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:0 0 40px}
     .game-card{--accent:#66d9ff;display:flex;flex-direction:column;min-width:0;position:relative;overflow:hidden;border:1px solid #405b83;border-radius:19px;background:linear-gradient(165deg,#1a2b4e 0%,#0d172c 92%);box-shadow:0 14px 35px #0005;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
     .game-card::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.9}
@@ -53,7 +52,7 @@
     footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid #49618b88;padding-top:23px;color:#acbfdc;font-size:.83rem;line-height:1.7}
     footer a{color:#afccf3}
     @media(max-width:960px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.game-card.breakout{grid-column:1/-1}.game-card.breakout .scene{height:156px}}
-    @media(max-width:620px){main{padding:18px 16px 28px}.hero{padding:18px 0 20px}h1{font-size:clamp(2.65rem,10vw,4rem)}.arcade-tags{gap:7px}.arcade-tags span{font-size:.65rem;padding:6px 9px}.collection-heading{margin:16px 0 13px}.collection-heading span{font-size:.68rem}.grid{grid-template-columns:1fr;gap:16px}.game-card.breakout{grid-column:auto}.scene,.game-card.breakout .scene{height:135px}.card-content{padding:20px}.game-card p{margin-bottom:21px;min-height:0}.meta{padding-top:13px}footer{font-size:.78rem}}
+    @media(max-width:620px){main{padding:18px 16px 28px}.hero{padding:18px 0 20px}h1{font-size:clamp(2.65rem,10vw,4rem)}.arcade-tags{gap:7px}.arcade-tags span{font-size:.65rem;padding:6px 9px}.collection-heading{margin:16px 0 13px}.grid{grid-template-columns:1fr;gap:16px}.game-card.breakout{grid-column:auto}.scene,.game-card.breakout .scene{height:135px}.card-content{padding:20px}.game-card p{margin-bottom:21px;min-height:0}.meta{padding-top:13px}footer{font-size:.78rem}}
     @media(prefers-reduced-motion:reduce){.game-card,.play{transition:none}.game-card:hover,.play:hover{transform:none}}
   </style>
 </head>
@@ -69,7 +68,7 @@
       </div>
     </header>
 
-    <div class="collection-heading"><h2>SELECT YOUR GAME</h2><span>01 — 03 / ARCADE COLLECTION</span></div>
+    <div class="collection-heading"><h2>SELECT YOUR GAME</h2></div>
     <section class="grid" aria-label="Three playable arcade games">
       <article class="game-card swarm">
         <div class="scene scene-swarm" aria-hidden="true">
