@@ -3,81 +3,194 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Play Star Swarm and Asteroid Rush, two free browser arcade games by MasterJimo.">
+  <meta name="description" content="MasterJimo Arcade: three free browser arcade games — Star Swarm, Asteroid Rush, and Neon Breakout. Play instantly, no downloads required.">
   <meta name="theme-color" content="#080e22">
-  <title>MasterJimo Arcade — Free Browser Games</title>
+  <title>MasterJimo Arcade — 3 Free Browser Games</title>
   <style>
-    :root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    :root{color-scheme:dark;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;--ink:#f2f6ff;--muted:#c3d4f0;--cyan:#8deaff}
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0,#19376a 0,#0b1530 42%,#070b19 100%);color:#f2f6ff}
-    main{max-width:980px;margin:auto;padding:clamp(24px,6vw,68px) 20px}
-    h1{font-size:clamp(2.3rem,6vw,4.3rem);margin:.2em 0;letter-spacing:-.04em}
-    .eyebrow{color:#8dbbff;font-size:.9rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
-    .intro{max-width:650px;color:#c3d4f0;font-size:1.12rem;line-height:1.7}
-    .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:22px;margin:40px 0}
-    article{padding:28px;border:1px solid #40537c;border-radius:20px;background:linear-gradient(160deg,#1c2c4f,#111a30);box-shadow:0 16px 34px #0003}
-    article h2{margin:0 0 12px;font-size:1.65rem}
-    article p{color:#c3d4f0;line-height:1.65;min-height:75px}
-    .play{display:inline-flex;align-items:center;gap:12px;margin:12px 0 6px;padding:7px 18px 7px 8px;border-radius:12px;color:#061126;background:#a8d0ff;font-weight:800;text-decoration:none}
-    .ship-badge{display:inline-flex;align-items:center;justify-content:center;flex:none;width:46px;height:46px;border-radius:9px;background:#101f41;box-shadow:inset 0 0 0 1px #4a6a96}
-    .ship-icon{width:37px;height:37px;overflow:visible;filter:drop-shadow(0 0 3px #46cfff)}
-    .play:hover,.play:focus-visible{background:#e2f0ff}
-    .meta{margin-top:12px;font-size:.92rem}
-    a{color:#acd2ff}
-    a:focus-visible{outline:3px solid #fff;outline-offset:4px}
-    footer{border-top:1px solid #40537c;padding-top:24px;color:#a9b9d8;line-height:1.6}
+    body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% -12%,#1b4177 0,#0b1732 46%,#070b19 100%);color:var(--ink)}
+    body::before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.32;background-image:radial-gradient(#a6dfff 1px,transparent 1px),radial-gradient(#fff 1px,transparent 1px);background-size:100px 100px,157px 157px;background-position:20px 30px,84px 70px;mask-image:linear-gradient(180deg,#000,transparent 90%)}
+    main{position:relative;max-width:1190px;margin:auto;padding:30px clamp(16px,4vw,40px) 35px}
+    .topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:21px;border-bottom:1px solid #4a608440}
+    .brand{display:flex;gap:10px;align-items:center;font-weight:900;letter-spacing:.13em;font-size:14px;color:#e8f8ff;text-decoration:none}
+    .brand-mark{display:grid;place-items:center;height:34px;width:34px;border-radius:9px;border:1px solid #60cded88;background:#102b50;color:#79dfff;text-shadow:0 0 12px #55cfff}
+    .online{font-size:12px;letter-spacing:.12em;color:#b7d3e9;font-weight:800;white-space:nowrap}
+    .online::before{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#57ffc7;box-shadow:0 0 11px #57ffc7;margin-right:9px;vertical-align:middle}
+    .hero{padding:clamp(35px,6vw,68px) 0 16px;max-width:860px}
+    .eyebrow{color:#83dfff;font-size:.78rem;font-weight:900;letter-spacing:.23em;text-transform:uppercase;margin:0 0 14px}
+    h1{font-size:clamp(2.45rem,6.1vw,5.25rem);line-height:1.06;margin:0 0 18px;letter-spacing:-.055em}
+    h1 span{color:#8deaff;text-shadow:0 0 35px #41aaff5e}
+    .intro{max-width:720px;color:var(--muted);font-size:clamp(1rem,1.6vw,1.15rem);line-height:1.7;margin:0}
+    .arcade-tags{display:flex;align-items:center;flex-wrap:wrap;gap:9px;margin-top:24px}
+    .arcade-tags span{color:#b9cee9;border:1px solid #49618b88;border-radius:999px;padding:7px 12px;font-size:.72rem;font-weight:800;letter-spacing:.08em}
+    .collection-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;margin:20px 0 15px}
+    .collection-heading h2{font-size:1rem;letter-spacing:.17em;color:#d8eafb;margin:0}
+    .collection-heading span{font-size:.75rem;color:#9fbbdd;letter-spacing:.13em}
+    .grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin:0 0 40px}
+    .game-card{--accent:#66d9ff;display:flex;flex-direction:column;min-width:0;position:relative;overflow:hidden;border:1px solid #405b83;border-radius:19px;background:linear-gradient(165deg,#1a2b4e 0%,#0d172c 92%);box-shadow:0 14px 35px #0005;transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+    .game-card::before{content:"";position:absolute;inset:0 0 auto;height:2px;background:linear-gradient(90deg,transparent,var(--accent),transparent);opacity:.9}
+    .game-card:hover{transform:translateY(-5px);border-color:var(--accent);box-shadow:0 20px 44px #0007,0 0 32px #3fb5ff1a}
+    .game-card.asteroid{--accent:#6af1df}
+    .game-card.breakout{--accent:#e089ff}
+    .scene{height:148px;overflow:hidden;display:grid;place-items:center;border-bottom:1px solid #47618a60;position:relative}
+    .scene::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#111b30a0,transparent 48%)}
+    .scene svg{height:100%;width:100%;max-width:370px;display:block;overflow:visible}
+    .scene-swarm{background:radial-gradient(circle at 50% 100%,#194f88a1,#09162e 70%)}
+    .scene-asteroid{background:radial-gradient(circle at 60% 35%,#15576585,#0a1a33 75%)}
+    .scene-breakout{background:radial-gradient(circle at 55% 80%,#662d9a88,#11142d 78%)}
+    .card-content{display:flex;flex:1;flex-direction:column;padding:22px 22px 18px}
+    .game-tag{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--accent);font-size:.68rem;letter-spacing:.14em;font-weight:900;margin-bottom:9px}
+    .game-tag span:last-child{color:#8eaacb}
+    .game-card h3{font-size:clamp(1.35rem,2vw,1.65rem);letter-spacing:-.025em;margin:0 0 10px}
+    .game-card p{font-size:.94rem;color:var(--muted);line-height:1.6;margin:0 0 24px;flex:1}
+    .play{display:flex;align-items:center;gap:11px;width:100%;min-height:58px;padding:6px 13px 6px 6px;border-radius:11px;text-decoration:none;color:#061326;background:#b9dfff;font-weight:900;font-size:.77rem;letter-spacing:.045em;transition:background .15s ease,transform .15s ease}
+    .play:hover{background:#e8f6ff;transform:translateY(-1px)}
+    .breakout .play{background:#ddbcff}
+    .breakout .play:hover{background:#f2e3ff}
+    .ship-badge{display:grid;place-items:center;flex:none;width:45px;height:45px;border-radius:8px;background:#0b203f;box-shadow:inset 0 0 0 1px #4a6a96}
+    .ship-icon{width:35px;height:35px;overflow:visible;filter:drop-shadow(0 0 4px #46cfff)}
+    .breakout .ship-icon{filter:drop-shadow(0 0 5px #f283ff)}
+    .play-label{min-width:0;flex:1}
+    .play-arrow{font-size:22px;margin-left:auto}
+    .meta{display:flex;flex-wrap:wrap;gap:7px;align-items:center;padding-top:16px;font-size:.78rem;color:#97b3d1}
+    .meta a{color:#afccf3;text-underline-offset:3px}
+    .meta .sep{opacity:.5}
+    a:focus-visible{outline:3px solid white;outline-offset:4px}
+    footer{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid #49618b88;padding-top:23px;color:#acbfdc;font-size:.83rem;line-height:1.7}
+    footer a{color:#afccf3}
+    @media(max-width:960px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.game-card.breakout{grid-column:1/-1}.game-card.breakout .scene{height:156px}}
+    @media(max-width:620px){main{padding:18px 16px 28px}.topbar{padding-bottom:16px}.brand{font-size:12px;letter-spacing:.09em}.online{font-size:10px;letter-spacing:.05em}.hero{padding:36px 0 20px}h1{font-size:clamp(2.65rem,10vw,4rem)}.arcade-tags{gap:7px}.arcade-tags span{font-size:.65rem;padding:6px 9px}.collection-heading{margin:16px 0 13px}.collection-heading span{font-size:.68rem}.grid{grid-template-columns:1fr;gap:16px}.game-card.breakout{grid-column:auto}.scene,.game-card.breakout .scene{height:135px}.card-content{padding:20px}.game-card p{margin-bottom:21px;min-height:0}.meta{padding-top:13px}footer{font-size:.78rem}}
+    @media(prefers-reduced-motion:reduce){.game-card,.play{transition:none}.game-card:hover,.play:hover{transform:none}}
   </style>
 </head>
 <body>
   <main>
-    <header>
-      <h1>Two space games. One arcade.</h1>
-      <p class="intro">Looking for a quick space adventure? Jump into two free arcade games, challenge your reflexes, and chase a new high score. No downloads or sign-ups needed — just choose a game and play!</p>
+    <nav class="topbar" aria-label="Arcade home">
+      <a class="brand" href="./"><span class="brand-mark" aria-hidden="true">✦</span><span>MASTERJIMO ARCADE</span></a>
+      <span class="online">03 GAMES ONLINE</span>
+    </nav>
+
+    <header class="hero">
+      <p class="eyebrow">✦ FREE BROWSER ARCADE</p>
+      <h1>Three games.<br><span>One arcade.</span></h1>
+      <p class="intro">From surviving alien swarms and weaving through asteroids to shattering glowing bricks, your next high score is one click away. Pick your challenge, jump straight in, and enjoy three free arcade games — no downloads or sign-ups.</p>
+      <div class="arcade-tags" aria-label="Arcade features">
+        <span>✦ 3 UNIQUE GAMES</span>
+        <span>⚡ INSTANT PLAY</span>
+        <span>⌁ DESKTOP &amp; MOBILE</span>
+      </div>
     </header>
-    <section class="grid" aria-label="Available games">
-      <article>
-        <h2>Star Swarm</h2>
-        <p>Face wave after wave of enemies in a classic space shooter. Keep moving, keep firing, and see how long you can survive.</p>
-        <a class="play" href="../">
-          <span class="ship-badge" aria-hidden="true">
-            <svg class="ship-icon" viewBox="-34 -34 68 75" focusable="false">
-              <path fill="#49bfff" d="M0 -29 L11 -10 L24 -3 L30 18 L10 12 L0 21 L-10 12 L-30 18 L-24 -3 L-11 -10 Z"/>
-              <path fill="#e2fbff" d="M0 -18 L6 3 L0 9 L-6 3 Z"/>
-              <rect x="-17" y="16" width="7" height="12" fill="#ffb54e"/>
-              <rect x="10" y="16" width="7" height="12" fill="#ffb54e"/>
-            </svg>
-          </span>
-          <span>Play Star Swarm →</span>
-        </a>
-        <div class="meta"><a href="../about.html">About &amp; controls</a> · <a href="../privacy.html">Privacy</a></div>
+
+    <div class="collection-heading"><h2>SELECT YOUR GAME</h2><span>01 — 03 / ARCADE COLLECTION</span></div>
+    <section class="grid" aria-label="Three playable arcade games">
+      <article class="game-card swarm">
+        <div class="scene scene-swarm" aria-hidden="true">
+          <svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#bdeaff" opacity=".85"><circle cx="25" cy="31" r="1.5"/><circle cx="286" cy="21" r="1.2"/><circle cx="300" cy="101" r="1"/><circle cx="68" cy="84" r="1"/><circle cx="225" cy="32" r="1.5"/><circle cx="118" cy="17" r="1"/></g>
+            <g fill="#ff7ac0" stroke="#ffbde4" stroke-width="1.2" opacity=".95">
+              <path d="M91 37l12 7 12-7 11 8-5 15-18 8-18-8-5-15z"/><path d="M160 22l12 7 12-7 11 8-5 15-18 8-18-8-5-15z"/><path d="M229 37l12 7 12-7 11 8-5 15-18 8-18-8-5-15z"/>
+            </g>
+            <g stroke="#78daff" stroke-width="3" stroke-linecap="round" opacity=".85"><path d="M170 69v-24"/><path d="M170 91v-13"/></g>
+            <path d="M170 87l10 17 22 7 7 20-26-7-13 8-13-8-26 7 7-20 22-7z" fill="#42bfff" stroke="#d9faff" stroke-width="2"/>
+            <path d="M170 95l6 17-6 10-6-10z" fill="#e5ffff"/><path d="M151 129l6 14 6-11M177 132l6 11 6-14" fill="#ffad65"/>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="game-tag"><span>SPACE SHOOTER</span><span>01 / 03</span></div>
+          <h3>Star Swarm</h3>
+          <p>Defend the galaxy against wave after wave of enemy ships. Move fast, keep firing and survive the swarm.</p>
+          <a class="play" href="../" aria-label="Play Star Swarm">
+            <span class="ship-badge" aria-hidden="true">
+              <svg class="ship-icon" viewBox="-34 -34 68 75" focusable="false">
+                <path fill="#49bfff" d="M0 -29 L11 -10 L24 -3 L30 18 L10 12 L0 21 L-10 12 L-30 18 L-24 -3 L-11 -10 Z"/>
+                <path fill="#e2fbff" d="M0 -18 L6 3 L0 9 L-6 3 Z"/>
+                <rect x="-17" y="16" width="7" height="12" fill="#ffb54e"/><rect x="10" y="16" width="7" height="12" fill="#ffb54e"/>
+              </svg>
+            </span><span class="play-label">PLAY STAR SWARM</span><span class="play-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="meta"><a href="../about.html">About &amp; controls</a><span class="sep">·</span><a href="../privacy.html">Privacy</a></div>
+        </div>
       </article>
-      <article>
-        <h2>Asteroid Rush</h2>
-        <p>Take control of your ship, dodge incoming asteroids, and blast rocks into pieces. How high can you score?</p>
-        <a class="play" href="/Asteroid-Rush/">
-          <span class="ship-badge" aria-hidden="true">
-            <svg class="ship-icon" viewBox="-29 -37 58 71" focusable="false">
-              <defs>
-                <linearGradient id="asteroid-ship-gradient" x1="0%" x2="100%" y1="0%" y2="0%">
-                  <stop offset="0%" stop-color="#095098"/>
-                  <stop offset="50%" stop-color="#2cc9e9"/>
-                  <stop offset="100%" stop-color="#062970"/>
-                </linearGradient>
-              </defs>
-              <path fill="url(#asteroid-ship-gradient)" stroke="#bbfaff" stroke-width="2.2" stroke-linejoin="round" d="M0 -31 L9 -8 L24 15 L19 23 L4 14 L0 21 L-4 14 L-19 23 L-24 15 L-9 -8 Z"/>
-              <path fill="none" stroke="#d7fbff" stroke-width="1.4" d="M0 -31 V19 M-22 17 L-7 6 M22 17 L7 6"/>
-              <path fill="#07345c" d="M0 -22 L7 -1 L0 11 L-7 -1 Z"/>
-              <rect x="-19" y="12" width="6" height="4" fill="#a3f7ff"/>
-              <rect x="13" y="12" width="6" height="4" fill="#a3f7ff"/>
-            </svg>
-          </span>
-          <span>Play Asteroid Rush →</span>
-        </a>
-        <div class="meta"><a href="/Asteroid-Rush/about.html">About &amp; controls</a> · <a href="/Asteroid-Rush/privacy.html">Privacy</a></div>
+
+      <article class="game-card asteroid">
+        <div class="scene scene-asteroid" aria-hidden="true">
+          <svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+            <g fill="#dcf9ff" opacity=".7"><circle cx="26" cy="17" r="1"/><circle cx="299" cy="28" r="1.5"/><circle cx="229" cy="107" r="1"/><circle cx="83" cy="119" r="1.2"/></g>
+            <g fill="#557b96" stroke="#86e8e7" stroke-width="2" stroke-linejoin="round"><path d="M54 45l26-18 28 10 10 25-24 24-29-6-16-18z"/><path d="M238 27l30-8 23 20-3 24-32 12-24-16z"/><path d="M273 104l16-12 24 8 9 21-17 17-26-7z"/></g>
+            <g fill="none" stroke="#91fff1" opacity=".6"><path d="M64 44l18-4 12 17-11 15"/><path d="M252 35l16 4 8 18"/><path d="M290 110l18 10"/></g>
+            <g transform="translate(171 79) rotate(24)">
+              <path d="M0-45l12 33 23 23-7 10-20-12-8 24-8-24-20 12-7-10 23-23z" fill="#21b6db" stroke="#bafcff" stroke-width="2.5" stroke-linejoin="round"/>
+              <path d="M0-34l9 26-9 18-9-18z" fill="#0c477d" stroke="#b4faff"/><path d="M-5 25L0 43 5 25" fill="#ffbb6a"/>
+            </g>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="game-tag"><span>ASTEROID SURVIVAL</span><span>02 / 03</span></div>
+          <h3>Asteroid Rush</h3>
+          <p>Slip between incoming rocks, blast asteroids into pieces and keep your ship alive as the action heats up.</p>
+          <a class="play" href="/Asteroid-Rush/" aria-label="Play Asteroid Rush">
+            <span class="ship-badge" aria-hidden="true">
+              <svg class="ship-icon" viewBox="-29 -37 58 71" focusable="false">
+                <defs><linearGradient id="asteroid-ship-gradient" x1="0%" x2="100%" y1="0%" y2="0%"><stop offset="0%" stop-color="#095098"/><stop offset="50%" stop-color="#2cc9e9"/><stop offset="100%" stop-color="#062970"/></linearGradient></defs>
+                <path fill="url(#asteroid-ship-gradient)" stroke="#bbfaff" stroke-width="2.2" stroke-linejoin="round" d="M0 -31 L9 -8 L24 15 L19 23 L4 14 L0 21 L-4 14 L-19 23 L-24 15 L-9 -8 Z"/>
+                <path fill="none" stroke="#d7fbff" stroke-width="1.4" d="M0 -31 V19 M-22 17 L-7 6 M22 17 L7 6"/>
+                <path fill="#07345c" d="M0 -22 L7 -1 L0 11 L-7 -1 Z"/>
+                <rect x="-19" y="12" width="6" height="4" fill="#a3f7ff"/><rect x="13" y="12" width="6" height="4" fill="#a3f7ff"/>
+              </svg>
+            </span><span class="play-label">PLAY ASTEROID RUSH</span><span class="play-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="meta"><a href="/Asteroid-Rush/about.html">About &amp; controls</a><span class="sep">·</span><a href="/Asteroid-Rush/privacy.html">Privacy</a></div>
+        </div>
+      </article>
+
+      <article class="game-card breakout">
+        <div class="scene scene-breakout" aria-hidden="true">
+          <svg viewBox="0 0 340 148" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="breakout-bricks" x1="0" x2="1"><stop stop-color="#6c7bff"/><stop offset="1" stop-color="#f379e8"/></linearGradient>
+              <linearGradient id="breakout-paddle-art" x1="0" x2="1"><stop stop-color="#52cfff"/><stop offset=".45" stop-color="#e1a1ff"/><stop offset="1" stop-color="#694bed"/></linearGradient>
+            </defs>
+            <g fill="url(#breakout-bricks)" stroke="#f2c7ff" stroke-width="1" opacity=".86">
+              <rect x="62" y="18" width="47" height="14" rx="3"/><rect x="116" y="18" width="47" height="14" rx="3"/><rect x="170" y="18" width="47" height="14" rx="3"/><rect x="224" y="18" width="47" height="14" rx="3"/>
+              <rect x="62" y="39" width="47" height="14" rx="3"/><rect x="116" y="39" width="47" height="14" rx="3"/><rect x="224" y="39" width="47" height="14" rx="3"/>
+              <rect x="62" y="60" width="47" height="14" rx="3"/><rect x="224" y="60" width="47" height="14" rx="3"/>
+            </g>
+            <path d="M177 55L184 71 175 85" fill="none" stroke="#fa9dff" stroke-width="2" stroke-dasharray="3 6"/>
+            <circle cx="175" cy="89" r="7" fill="#f6eaff" stroke="#a1e8ff" stroke-width="2"/>
+            <g><rect x="110" y="118" width="125" height="15" rx="7.5" fill="url(#breakout-paddle-art)" stroke="#eae2ff" stroke-width="2"/>
+            <path d="M120 124h104" stroke="#ffffff" opacity=".8" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="167" cy="124" r="3" fill="#fff"/><circle cx="199" cy="128" r="2" fill="#fff"/><path d="M145 120l3 5m62-4l3 6" stroke="#59faff" stroke-width="1.5"/></g>
+            <g fill="#f5f2ff"><circle cx="84" cy="110" r="1.7"/><circle cx="263" cy="106" r="1.5"/><circle cx="247" cy="92" r="1"/><circle cx="55" cy="93" r="1"/></g>
+          </svg>
+        </div>
+        <div class="card-content">
+          <div class="game-tag"><span>NEON BRICK BREAKER</span><span>03 / 03</span></div>
+          <h3>Neon Breakout</h3>
+          <p>Keep the ball bouncing, smash luminous bricks and catch power-ups with your cosmic paddle across three sectors.</p>
+          <a class="play" href="/Neon-Breakout/" aria-label="Play Neon Breakout">
+            <span class="ship-badge" aria-hidden="true">
+              <!-- Tiny galaxy paddle and ball, matching the arcade ship badges. -->
+              <svg class="ship-icon" viewBox="0 0 64 64" focusable="false">
+                <defs>
+                  <linearGradient id="galaxy-paddle" x1="0" y1="0" x2="1" y2=".6"><stop offset="0" stop-color="#52dfff"/><stop offset=".5" stop-color="#dc97ff"/><stop offset="1" stop-color="#6551de"/></linearGradient>
+                </defs>
+                <path d="M31 9l-1 13M27 16l6 2" stroke="#bbebff" stroke-width="2" opacity=".75" stroke-linecap="round"/>
+                <circle cx="35" cy="19" r="8" fill="#e9f7ff" stroke="#ffb6fa" stroke-width="2"/>
+                <path d="M6 41Q31 32 58 41L53 51Q31 45 11 51Z" fill="url(#galaxy-paddle)" stroke="#ddfaff" stroke-width="2"/>
+                <path d="M13 42q20-5 38 0" fill="none" stroke="#fff" stroke-width="2" opacity=".9"/>
+                <circle cx="26" cy="46" r="1.5" fill="#fff"/><circle cx="43" cy="45" r="1" fill="#fff"/>
+                <path d="M12 23v7m-3-3h6M52 17v7m-3-3h6" stroke="#c5a6ff" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+            </span><span class="play-label">PLAY NEON BREAKOUT</span><span class="play-arrow" aria-hidden="true">↗</span>
+          </a>
+          <div class="meta"><a href="https://github.com/MasterJimo/Neon-Breakout">Source on GitHub ↗</a><span class="sep">·</span><span>Keyboard &amp; touch controls</span></div>
+        </div>
       </article>
     </section>
     <footer>
-      © 2026 MasterJimo Arcade · Privacy: <a href="../privacy.html">Star Swarm</a> · <a href="/Asteroid-Rush/privacy.html">Asteroid Rush</a>
+      <span>© 2026 MasterJimo Arcade · Made for quick games and big scores.</span>
+      <span>Privacy: <a href="../privacy.html">Star Swarm</a> · <a href="/Asteroid-Rush/privacy.html">Asteroid Rush</a></span>
     </footer>
   </main>
 </body>
