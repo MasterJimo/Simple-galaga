@@ -19,11 +19,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
-      # Publish only the playable HTML file, not repository metadata.
+      # Publish the game and its public info/privacy pages (no repository metadata).
       - name: Prepare public website
         run: |
           mkdir -p _site
-          cp index.html _site/index.html
+          cp index.html about.html privacy.html _site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
